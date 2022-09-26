@@ -12,9 +12,8 @@
 
     <div class="sending-money">
         <h2>Sending money</h2>
-        <form action="{% url 'account_management_app:transfer' %}" method="POST">
+        <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
             {% csrf_token %}
-            <input name="my_account_number" type="text" placeholder="My Account number">
             <input name="amount" type="number" placeholder="Amount you want to transfer">
             <input name="account_number" type="text" placeholder="Account number">
             <button>

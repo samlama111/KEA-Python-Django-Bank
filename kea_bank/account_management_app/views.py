@@ -8,8 +8,7 @@ def index(request):
         'accounts': accounts,
     })
 
-def transfer(request):
-    account_number = request.POST['my_account_number']     
+def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.all()
    
