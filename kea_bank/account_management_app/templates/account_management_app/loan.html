@@ -1,3 +1,12 @@
+
+{% if customer.rank == "basic" %}
+
+<div>
+    You cant make a loan
+</div>
+
+{% else %}
+
 <div id="loan">
     <form>
         {% csrf_token %}
@@ -13,3 +22,6 @@
         </fieldset>
     </form>
 </div>
+
+{% endif %}
+

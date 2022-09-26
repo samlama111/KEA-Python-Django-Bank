@@ -14,8 +14,8 @@
 <body>
 
     <nav>
-        <a>Account</a>
-        <a>My profile</a>
+        <a href="/">Accounts</a>
+        <a href="{% url 'account_management_app:my_profile' customer.id %}">My profile</a>
     </nav>
 
     {% block content %}

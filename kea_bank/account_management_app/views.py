@@ -1,14 +1,18 @@
 from django.shortcuts import render
-from . models import Account
+from . models import Account, Customer
 from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     accounts = Account.objects.all()
+    customer = request.user
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
+        'customer': customer
     })
 
 def loan(request, account_number):
+    customer = request.user
+
     if request.method == 'POST':
         # TODO: replace 9999 with the bank's account number
         our_account = Account.objects.get(account_number=9999)
@@ -19,7 +23,8 @@ def loan(request, account_number):
         })
     else:
         return render(request, 'account_management_app/loan.html', {
-            'account_number': account_number
+            'account_number': account_number,
+            'customer': customer
         })
 
 
@@ -52,5 +57,8 @@ def account_details(request, account_number):
 
 
 
-def my_profile(request):
-    return render(request, 'account_management_app/my_profile.html', {})
+def my_profile(request, customer_id):
+    customer = Customer.objects.get(id = customer_id)
+    return render(request, 'account_management_app/my_profile.html', {
+        'customer': customer
+    })
