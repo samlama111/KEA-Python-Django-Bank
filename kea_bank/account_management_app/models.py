@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.core.exceptions import ValidationError
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -52,14 +53,11 @@ class Account(models.Model):
 
     def make_payment(self, amount, account_number):
         # check if balance is sufficient
-        # if self.balance < amount:
-        #     print('Balance is too low')
-        #     return
+        if self.balance < int(amount):
+            raise ValidationError('Balance is too low')
+
         target_account = Account.objects.get(account_number=account_number)
-        if target_account is None:
-            print('Target account doesnt exist')
-            return
-        # start a transaction, insert two entries
+
         with transaction.atomic():
             Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), note='', variable_symbol='')
             Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), note='', variable_symbol='')
