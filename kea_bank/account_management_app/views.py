@@ -6,7 +6,6 @@ def index(request):
     accounts = Account.objects.all()
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
-        'test_account': accounts[0]
     })
 
 def transfer(request):
@@ -31,6 +30,15 @@ def transfer(request):
             'error': f'there was an error: {e.message}'
         }
     return render(request, 'account_management_app/index.html', context)
+
+def account_details(request, account_number):
+    accounts = Account.objects.get(account_number = account_number)
+    return render(request, 'account_management_app/account_details.html', {
+        'accounts': accounts,
+        'test_account': accounts
+    })
+
+
 
 def my_profile(request):
     return render(request, 'account_management_app/my_profile.html', {})

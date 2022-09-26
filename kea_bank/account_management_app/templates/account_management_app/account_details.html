@@ -1,0 +1,26 @@
+<div id="{{account.account_number }}">
+    {% if account.account_number %}
+    <h2>{{account.account_number}}</h2>
+    {% endif %}
+    
+
+    <div class="balance">
+        <h2>Balance</h2>
+        {{test_account.balance}}
+        <hr>
+    </div>
+
+    <div class="sending-money">
+        <h2>Sending money</h2>
+        <form action="{% url 'account_management_app:transfer' %}" method="POST">
+            {% csrf_token %}
+            <input name="my_account_number" type="text" placeholder="My Account number">
+            <input name="amount" type="number" placeholder="Amount you want to transfer">
+            <input name="account_number" type="text" placeholder="Account number">
+            <button>
+                Submit
+            </button>
+        </form>
+    </div>
+    <hr>
+</div>

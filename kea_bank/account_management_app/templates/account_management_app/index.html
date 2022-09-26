@@ -4,36 +4,29 @@
 <div>
     <h1 class="heading">Welcome</h1>
 
+
+
     <div class="payment-list">
-        <h2>Payment list</h2>
-        {% for account in accounts %}
+        <div class="accounts">
+            <h2>All accounts</h2>
+            {% for account in accounts %}
+        
+            <div id="{{account.account_number }}"
+                 class="clickable"
+                 hx-get="{% url 'account_management_app:account_details' account.account_number %}"
+                 hx-trigger="click"
+                 hx-target="this"
+                 hx-swap="outerHTML">
+                <div>{{account.account_number}}</div>
+            </div>
+            {% endfor %}
 
-        <ul>
-            <li>{{account.account_number}}</li>
-        </ul>
+            <hr>
+        </div>
 
-        {% endfor %}
-        <hr>
     </div>
 
-    <div class="balance">
-        <h2>Balance</h2>
-        {{test_account.balance}}
-        <hr>
-    </div>
-
-    <div class="sending-money">
-        <h2>Sending money</h2>
-        <form action="{% url 'account_management_app:transfer' %}" method="POST">
-            {% csrf_token %}
-            <input name="my_account_number" type="text" placeholder="My Account number">
-            <input name="amount" type="number" placeholder="Amount you want to transfer">
-            <input name="account_number" type="text" placeholder="Account number">
-            <button>
-                Submit
-            </button>
-        </form>
-    </div>
+    
 
     {% if error %}
         {{ error }}
