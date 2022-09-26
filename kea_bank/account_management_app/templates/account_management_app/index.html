@@ -6,10 +6,10 @@
 
     <div class="payment-list">
         <h2>Payment list</h2>
-        {% for payment in payments %}
+        {% for account in accounts %}
 
         <ul>
-            <li>{{payment}}</li>
+            <li>{{account.account_number}}</li>
         </ul>
 
         {% endfor %}
@@ -18,16 +18,20 @@
 
     <div class="balance">
         <h2>Balance</h2>
-        {{balance}}
+        {{test_account.balance}}
         <hr>
     </div>
 
     <div class="sending-money">
         <h2>Sending money</h2>
-        <form action="">
-            <input name="amount_filed" type="number" placeholder="Amount you want to transfer">
-            <input name="account_numebr" type="text" placeholder="Account number" >
-            <button type="submit">Submit</button>
+        <form action="{% url 'account_management_app:transfer' %}" method="POST">
+            {% csrf_token %}
+            <input name="my_account_number" type="text" placeholder="My Account number">
+            <input name="amount" type="number" placeholder="Amount you want to transfer">
+            <input name="account_number" type="text" placeholder="Account number">
+            <button>
+                Submit
+            </button>
         </form>
     </div>
 

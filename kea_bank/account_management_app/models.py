@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -14,8 +15,60 @@ class Customer(models.Model):
         GOLD='gold'
 
     rank = models.CharField(
+        max_length=10,
         choices=CustomerRank.choices,
         default=CustomerRank.BASIC
     )
 
-# Create your models here.
+
+class Account(models.Model):
+    account_number = models.IntegerField(unique=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    
+    class AccountType(models.TextChoices):
+        PRIVATE='private'
+        BUSINESS='business'
+        LOAN='loan'
+        BANK='bank'
+
+    account_type = models.CharField(
+        max_length=10,
+        choices=AccountType.choices,
+        default=AccountType.PRIVATE
+    )
+
+    def get_transactions(self):
+        my_transactions = Ledger.objects.filter(account=self)
+        return my_transactions
+
+    @property
+    def balance(self):
+        my_transactions = self.get_transactions()
+        if my_transactions.count() == 0:
+            return 0
+        my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
+        return my_transactions_with_balance['balance']
+
+
+    def make_payment(self, amount, account_number):
+        # check if balance is sufficient
+        # if self.balance < amount:
+        #     print('Balance is too low')
+        #     return
+        target_account = Account.objects.get(account_number=account_number)
+        if target_account is None:
+            print('Target account doesnt exist')
+            return
+        # start a transaction, insert two entries
+        with transaction.atomic():
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), note='', variable_symbol='')
+            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), note='', variable_symbol='')
+
+class Ledger(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    is_creditor = models.BooleanField(default=False)
+    amount = models.IntegerField()
+    created_timestamp = models.DateTimeField(auto_now_add=True)
+    note = models.CharField(max_length=100)
+    variable_symbol = models.CharField(max_length=30)
+
