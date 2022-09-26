@@ -32,10 +32,10 @@ def transfer(request):
     return render(request, 'account_management_app/index.html', context)
 
 def account_details(request, account_number):
-    accounts = Account.objects.get(account_number = account_number)
+    account = Account.objects.get(account_number = account_number)
     return render(request, 'account_management_app/account_details.html', {
-        'accounts': accounts,
-        'test_account': accounts
+        'account': account,
+        'test_account': account
     })
 
 
