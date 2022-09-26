@@ -8,15 +8,29 @@ def index(request):
         'accounts': accounts,
     })
 
+def loan(request, account_number):
+    if request.method == 'POST':
+        # TODO: replace 9999 with the bank's account number
+        our_account = Account.objects.get(account_number=9999)
+        our_account.make_payment(request.POST['amount'], account_number)
+        my_account = Account.objects.get(account_number=account_number)
+        return render(request, 'account_management_app/account_details.html', {
+            'account': my_account
+        })
+    else:
+        return render(request, 'account_management_app/loan.html', {
+            'account_number': account_number
+        })
+
+
 def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.all()
    
     try:
-        my_account.make_payment(request.POST['amount'], request.POST['account_number'])
+        my_account.make_payment(request.POST['amount'], request.POST['destination_account_number'])
         context = {
-            'accounts': accounts,
-            'test_account': accounts[0]
+            'accounts': accounts
         }
     except ObjectDoesNotExist as objectError:
         context = { 
@@ -33,8 +47,7 @@ def transfer(request, account_number):
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
     return render(request, 'account_management_app/account_details.html', {
-        'account': account,
-        'test_account': account
+        'account': account
     })
 
 

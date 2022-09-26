@@ -1,12 +1,10 @@
-<div id="{{account.account_number }}">
-    {% if account.account_number %}
-    <h2>{{account.account_number}}</h2>
-    {% endif %}
-    
+<div id="account_{{account.account_number}}">
+<section class="left col-element">
+    <h2>{{account.account_number}}</h2>    
 
     <div class="balance">
         <h2>Balance</h2>
-        {{test_account.balance}}
+        {{account.balance}}
         <hr>
     </div>
 
@@ -22,4 +20,14 @@
         </form>
     </div>
     <hr>
+</section>
+<section class="right col-element">
+    <h3>Loan</h3>
+    <div 
+        id="loan_container"
+        hx-swap="outerHTML"
+        hx-get="{% url 'account_management_app:loan' account.account_number %}"
+        hx-trigger="load">
+    </div>
+</section>
 </div>

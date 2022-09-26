@@ -1,0 +1,15 @@
+<div id="loan">
+    <form>
+        {% csrf_token %}
+        <fieldset>
+            <input type="number" name="amount" />
+            <button
+            hx-post="{% url 'account_management_app:loan' account_number %}"
+            hx-trigger="click"
+            hx-target="#account_{{account_number}}"
+            hx-swap="outerHTML">
+                Get loan
+            </button>
+        </fieldset>
+    </form>
+</div>

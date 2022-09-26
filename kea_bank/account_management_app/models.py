@@ -52,8 +52,8 @@ class Account(models.Model):
 
 
     def make_payment(self, amount, account_number):
-        # check if balance is sufficient
-        if self.balance < int(amount):
+        # TODO: replace 9999 with bank's account number
+        if self.balance < int(amount) and self.account_number != 9999:
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
