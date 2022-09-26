@@ -3,6 +3,35 @@
 
 <div>
     <h1 class="heading">Welcome</h1>
+
+    <div class="payment-list">
+        <h2>Payment list</h2>
+        {% for payment in payments %}
+
+        <ul>
+            <li>{{payment}}</li>
+        </ul>
+
+        {% endfor %}
+        <hr>
+    </div>
+
+    <div class="balance">
+        <h2>Balance</h2>
+        {{balance}}
+        <hr>
+    </div>
+
+    <div class="sending-money">
+        <h2>Sending money</h2>
+        <form action="">
+            <input name="amount_filed" type="number" placeholder="Amount you want to transfer">
+            <input name="account_numebr" type="text" placeholder="Account number" >
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+
 </div>
 
 
