@@ -2,6 +2,7 @@ from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
+from django.db.models import Sum
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -49,8 +50,8 @@ class Account(models.Model):
             return 0
         my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
         return my_transactions_with_balance['balance']
-
-
+    
+    
     def make_payment(self, amount, account_number):
         # TODO: replace 9999 with bank's account number
         if self.balance < int(amount) and self.account_number != 9999:
@@ -61,6 +62,7 @@ class Account(models.Model):
         with transaction.atomic():
             Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), note='', variable_symbol='')
             Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), note='', variable_symbol='')
+    
 
 class Ledger(models.Model):
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
@@ -70,3 +72,4 @@ class Ledger(models.Model):
     note = models.CharField(max_length=100)
     variable_symbol = models.CharField(max_length=30)
 
+    

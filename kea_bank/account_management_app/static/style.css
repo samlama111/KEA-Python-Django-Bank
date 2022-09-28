@@ -1,19 +1,122 @@
+:root{
+    --darkBlue: #06283D;
+    --coldBlue: #256D85;
+    --blue: #47B5FF;
+    --lightBlue: #DFF6FF;
+    --white: #fff;
+    --black: #000;
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-image: url("../static/images/background.jpg");
+    background-size: cover;
+}
 
 
-nav{
+
+
+main{
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
-    height: 30px;
-    background-color: white;
-    top: 0;
+    margin: 20px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    height: 100%;
+}
+
+h1{
+    color: var(--black);
+    font-size: 30px;
+}
+
+
+.navigation{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 150px;
+    align-items: center;
+    margin-top: 20px;
+    border-right: 2px solid var(--lightBlue);
+}
+
+#logo{
+    width: 100px;
+}
+
+#nav{
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: var(--black);
+}
+
+
+.link-wrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#icon{
+    width: 20px;
+    height: 15px;
+    padding-right: 5px;
+}
+
+.content{
+    padding: 20px 20px 20px 20px;
     width: 100%;
 }
 
-a{
-    font-size: 16px;
+.account-wrapper{
+    width: 100%;
 }
 
-.heading{
-    color: blue;
+.total-balance{
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.total-balance p{
+    color: var(--black);
+}
+
+#amount_balance{
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.account_number{
+    height: 50px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    padding-left: 10px;
+    padding-top: 15px;
+    cursor: pointer;
+}
+
+@media(max-width:1206px){
+    body{
+        background-image: url("../static/images/background-mobile.jpg");
+
+    }
 }

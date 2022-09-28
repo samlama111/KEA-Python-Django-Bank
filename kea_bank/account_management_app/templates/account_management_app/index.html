@@ -1,17 +1,26 @@
 {% extends "account_management_app/base.html" %}
 {% block content %}
 
-<div>
-    <h1 class="heading">Welcome</h1>
+<div class="account-wrapper">
+    <h1>Dashboard</h1>
+    <p> Welcome {{customer}} !</p>
+
+    <div class="total-balance">
+        <p>YOUR TOTAL BALANCE</p>
+
+        <p id="amount_balance">{{total_balance}}</p>
+
+    </div>
+
 
 
 
     <div class="payment-list">
         <div class="accounts">
-            <h2>All accounts</h2>
+            <h2>Your accounts</h2>
             {% for account in accounts %}
         
-            <div id="{{account.account_number }}"
+            <div class="account_number" id="{{account.account_number }}"
                  class="clickable"
                  hx-get="{% url 'account_management_app:account_details' account.account_number %}"
                  hx-trigger="click"
@@ -21,7 +30,7 @@
             </div>
             {% endfor %}
 
-            <hr>
+
         </div>
 
     </div>

@@ -1,13 +1,23 @@
 from django.shortcuts import render
 from . models import Account, Customer
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
+
+
 
 def index(request):
     accounts = Account.objects.all()
+    accounts_balance_array = []
     customer = request.user
+
+    for account in accounts:
+        list_total = account.balance
+        accounts_balance_array.append(list_total)
+    total_balance = sum(accounts_balance_array)
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
-        'customer': customer
+        'customer': customer,
+        'total_balance': total_balance
     })
 
 def loan(request, account_number):
