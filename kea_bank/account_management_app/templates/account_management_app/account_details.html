@@ -1,37 +1,46 @@
-<div id="account_{{account.account_number}}">
-<section class="left col-element">
-    <h2>{{account.account_number}}</h2>    
 
-    <div class="balance">
-        <h2>Balance</h2>
-        {{account.balance}}
-        <hr>
-    </div>
 
-    <div class="sending-money">
-        <h2>Sending money</h2>
-        <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
-            {% csrf_token %}
-            <input name="amount" type="number" placeholder="Amount you want to transfer">
-            <input name="account_number" type="text" placeholder="Account number">
-            <button>
-                Submit
-            </button>
-        </form>
-    </div>
-    <hr>
-</section>
-<section class="right col-element">
-    <h3>Loan</h3>
-    <div 
-        id="loan_container"
-        hx-swap="outerHTML"
-        hx-get="{% url 'account_management_app:loan' account.account_number %}"
-        hx-trigger="load">
-    </div>
-</section>
-
-<section>
-    <h3>All transactions</h3>
-</section>
+<div id="modal" _="on closeModal">
+	<div class="modal-content">
+        <div id="account_{{account.account_number}}">
+            <section class="left col-element">
+                <div class="top-details">
+                    <p>{{account.account_number}}</p>    
+                    <a href="/">Close</a>
+                </div>
+            
+                <div class="balance">
+                    <p>Balance: {{account.balance}} </p>
+                </div>
+            
+                <div class="sending-money">
+                    <h3>Transfering money</h3>
+                    <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
+                        {% csrf_token %}
+                        <input name="amount" type="number" placeholder="Amount">
+                        <input name="account_number" type="number" placeholder="Account number">
+                        <button>
+                            Send
+                        </button>
+                    </form>
+                </div>
+                <hr>
+            </section>
+            <section class="right col-element">
+                <h3>Loan</h3>
+                <div 
+                    id="loan_container"
+                    hx-swap="outerHTML"
+                    hx-get="{% url 'account_management_app:loan' account.account_number %}"
+                    hx-trigger="load">
+                </div>
+            </section>
+            
+            <section>
+                <h3>All transactions</h3>
+            </section>
+            </div>
+	</div>
 </div>
+
+

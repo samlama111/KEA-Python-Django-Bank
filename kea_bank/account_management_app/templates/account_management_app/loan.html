@@ -10,8 +10,7 @@
 <div id="loan">
     <form>
         {% csrf_token %}
-        <fieldset>
-            <input type="number" name="amount" />
+            <input type="number" name="amount" placeholder="Amount" />
             <button
             hx-post="{% url 'account_management_app:loan' account_number %}"
             hx-trigger="click"
@@ -19,8 +18,9 @@
             hx-swap="outerHTML">
                 Get loan
             </button>
-        </fieldset>
     </form>
+
+    <hr>
 </div>
 
 {% endif %}
