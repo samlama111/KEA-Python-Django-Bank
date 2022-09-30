@@ -1,27 +1,29 @@
 
-{% if customer.rank == "basic" %}
 
-<div>
-    You cant make a loan
-</div>
 
-{% else %}
+
 
 <div id="loan">
+    {% if customer.rank == "basic" %}
+    <p>You cant make a loan</p>
+
+    {% else %}
     <form>
         {% csrf_token %}
             <input type="number" name="amount" placeholder="Amount" />
             <button
-            hx-post="{% url 'account_management_app:loan' account_number %}"
+            hx-post="{% url 'account_management_app:loan' account_number=account_number customer_id=customer.id %}"
             hx-trigger="click"
             hx-target="#account_{{account_number}}"
             hx-swap="outerHTML">
                 Get loan
             </button>
     </form>
+    {% endif %}
 
     <hr>
 </div>
 
-{% endif %}
+
+
 

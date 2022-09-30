@@ -20,8 +20,8 @@ def index(request):
         'total_balance': total_balance
     })
 
-def loan(request, account_number):
-    customer = request.user
+def loan(request, account_number, customer_id):
+    customer = Customer.objects.get(id = customer_id)
 
     if request.method == 'POST':
         # TODO: replace 9999 with the bank's account number
@@ -61,8 +61,11 @@ def transfer(request, account_number):
 
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
+    customer = request.user
+
     return render(request, 'account_management_app/account_details.html', {
-        'account': account
+        'account': account,
+        'customer':customer
     })
 
 

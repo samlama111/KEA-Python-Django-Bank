@@ -31,7 +31,7 @@
                 <div 
                     id="loan_container"
                     hx-swap="outerHTML"
-                    hx-get="{% url 'account_management_app:loan' account.account_number %}"
+                    hx-get="{% url 'account_management_app:loan' account_number=account.account_number customer_id=customer.id  %}"
                     hx-trigger="load">
                 </div>
             </section>

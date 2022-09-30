@@ -8,5 +8,5 @@ urlpatterns = [
     path('transfer/<int:account_number>/', views.transfer, name="transfer"),
     path('my-profile/<int:customer_id>/', views.my_profile, name="my_profile"),
     path('account_details/<int:account_number>/', views.account_details, name="account_details"),
-    path('loan/<int:account_number>/', views.loan, name="loan"),
+    path('loan/<int:account_number>/<int:customer_id>/', views.loan, name="loan"),
 ]
