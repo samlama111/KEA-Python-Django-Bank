@@ -3,19 +3,18 @@ from . models import Account, Customer
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 
+
 @login_required(login_url='login_app:login')
 def index(request):
-    accounts = Account.objects.all()
-    accounts_balance_array = []
-    customer = request.user
+    customer = request.user.customer
+    accounts = Account.objects.filter(customer=customer)
+    total_balance = 0
+    for item in accounts:
+        total_balance += item.balance
 
-    for account in accounts:
-        list_total = account.balance
-        accounts_balance_array.append(list_total)
-    total_balance = sum(accounts_balance_array)
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
-        'customer': customer,
+        'customer': request.user,
         'total_balance': total_balance
     })
 
@@ -40,7 +39,7 @@ def loan(request, account_number, customer_id):
 @login_required(login_url='login_app:login')
 def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
-    accounts = Account.objects.all()
+    accounts = Account.objects.all(customer=request.user.customer)
    
     try:
         my_account.make_payment(request.POST['amount'], request.POST['destination_account_number'])
