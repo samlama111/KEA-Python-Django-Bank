@@ -62,10 +62,12 @@ def transfer(request, account_number):
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
     customer = request.user
+    transactions = account.get_transactions
 
     return render(request, 'account_management_app/account_details.html', {
         'account': account,
-        'customer':customer
+        'customer':customer,
+        'transactions': transactions
     })
 
 @login_required(login_url='/accounts/login/')
