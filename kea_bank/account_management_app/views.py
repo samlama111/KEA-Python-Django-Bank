@@ -39,10 +39,10 @@ def loan(request, account_number, customer_id):
 @login_required(login_url='login_app:login')
 def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
-    accounts = Account.objects.all(customer=request.user.customer)
+    accounts = Account.objects.filter(customer=request.user.customer)
    
     try:
-        my_account.make_payment(request.POST['amount'], request.POST['destination_account_number'])
+        my_account.make_payment(request.POST['amount'], request.POST['account_number'])
         context = {
             'accounts': accounts
         }
