@@ -28,8 +28,14 @@
                 </a>
                 <a id="nav" href="{% url 'account_management_app:my_profile' customer.id %}">
                     <div class="link-wrapper">
-                        <img id="icon" src="{% static 'images/user.png' %}" alt="dashboard">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
                         <p>My profile</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'login_app:logout' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>Sign out</p>
                     </div>
                 </a>
             </nav>
