@@ -17,7 +17,7 @@ def index(request):
     })
 
 @login_required(login_url='login_app:login')
-def loan(request, account_number, customer_id):
+def loan(request, account_number):
     customer = request.user.customer
 
     if request.method == 'POST':
@@ -25,8 +25,10 @@ def loan(request, account_number, customer_id):
         our_account = Account.objects.get(account_number=9999)
         our_account.make_payment(request.POST['amount'], account_number)
         my_account = Account.objects.get(account_number=account_number)
+        transactions = my_account.get_transactions
         return render(request, 'account_management_app/account_details.html', {
-            'account': my_account
+            'account': my_account,
+            'transactions': transactions
         })
     else:
         return render(request, 'account_management_app/loan.html', {
@@ -40,33 +42,26 @@ def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.filter(customer=request.user.customer)
    
+    context = {
+        'accounts': accounts,
+        'total_balance': customer.total_balance
+    }
     try:
         my_account.make_payment(request.POST['amount'], request.POST['account_number'])
-        context = {
-            'accounts': accounts,
-            'total_balance': customer.total_balance
-        }
     except ObjectDoesNotExist as objectError:
-        context = { 
-            'accounts': accounts,
-            'error': f'there was an error: {objectError}'
-        }
+        context['error'] = f'there was an error: {objectError}'
     except Exception as e:
-        context = { 
-            'accounts': accounts,
-            'error': f'there was an error: {e.message}'
-        }
+        context['error'] = f'there was an error: {e.message}'
+
     return render(request, 'account_management_app/index.html', context)
 
 @login_required(login_url='login_app:login')
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
-    customer = request.user
     transactions = account.get_transactions
 
     return render(request, 'account_management_app/account_details.html', {
         'account': account,
-        'customer':customer,
         'transactions': transactions
     })
 
