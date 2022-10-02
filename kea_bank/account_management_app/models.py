@@ -33,6 +33,7 @@ class Customer(models.Model):
 
 class Account(models.Model):
     account_number = models.IntegerField(unique=True)
+    is_customer = models.BooleanField(default=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     
     class AccountType(models.TextChoices):
