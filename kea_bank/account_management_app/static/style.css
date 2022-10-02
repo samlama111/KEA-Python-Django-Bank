@@ -209,6 +209,8 @@ button{
 	animation-name:zoomIn;
 	animation-duration:150ms;
 	animation-timing-function: ease;
+    overflow: auto;
+    margin-bottom: 20px;
 }
 
 .closing {
