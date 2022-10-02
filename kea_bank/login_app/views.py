@@ -11,7 +11,7 @@ def login(request):
       user = authenticate(request, username=request.POST['user'], password=request.POST['password'])
       if user:
             dj_login(request, user)
-            #return HttpResponseRedirect(reverse('todo_app:index'))
+            return HttpResponseRedirect(reverse('account_management_app:index'))
       else:
             context = {
                'error': 'Bad username or password.'
