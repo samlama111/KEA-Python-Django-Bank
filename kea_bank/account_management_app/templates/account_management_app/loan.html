@@ -1,13 +1,10 @@
-
-
-
-
-
 <div id="loan">
     {% if customer.rank == "basic" %}
     <p>You cant make a loan</p>
 
     {% else %}
+
+    <p>Take loan money</p>
     <form>
         {% csrf_token %}
             <input type="number" name="amount" placeholder="Amount" />
@@ -16,7 +13,7 @@
             hx-trigger="click"
             hx-target="#account_{{account_number}}"
             hx-swap="outerHTML">
-                Get loan
+                Take loan
             </button>
     </form>
     {% endif %}

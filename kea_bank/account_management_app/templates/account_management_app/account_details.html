@@ -3,72 +3,79 @@
 <div id="modal" _="on closeModal">
 	<div class="modal-content">
         <div id="account_{{account.account_number}}">
-            <section class="left col-element">
+            <section class="col-element">
                 <div class="top-details">
                     <p>{{account.account_number}}</p>    
                     <a href="/">Close</a>
                 </div>
-            
-                <div class="balance">
-                    <p>Balance: {{account.balance}} </p>
-                </div>
-            
-                <div class="sending-money">
+            </section>
+        
+            <section class="popup-wrapper">
+                <div class="transfering-wrapper">
                     <h3>Transfering money</h3>
-                    <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
-                        {% csrf_token %}
-                        <input name="amount" type="number" placeholder="Amount">
-                        <input name="account_number" type="number" placeholder="Account number">
-                        <input name="note" type="number" placeholder="Note">
-                        <button>
-                            Send
-                        </button>
-                    </form>
+
+                    <div class="balance">
+                        <p>Balance: {{account.balance}} </p>
+                    </div>
+    
+                    <div class="sending-money">
+                        <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
+                            {% csrf_token %}
+                            <input name="amount" type="number" placeholder="Amount">
+                            <input name="account_number" type="number" placeholder="Account number">
+                            <input name="note" type="number" placeholder="Note">
+                            <button>
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                    <hr>
+    
+                    <h3>All transactions</h3>
+                    <table>
+                        <thead>
+                            <tr>
+    
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Note</th>
+    
+                            </tr>
+                        </thead>
+                        {% for transaction in transactions%}
+    
+                        <tbody>
+                            <tr>
+    
+                                <td>{{transaction.created_timestamp}}</td>
+                                <td>{{transaction.amount}}</td>
+                                <td>{{transaction.note}}</td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
                 </div>
-                <hr>
+
+                <section class="col-element">
+                    <h3>Loan</h3>
+                    <div 
+                        id="loan_container"
+                        hx-swap="outerHTML"
+                        hx-get="{% url 'account_management_app:loan' account_number=account.account_number customer_id=customer.id  %}"
+                        hx-trigger="load">
+                    </div>
+                </section>
             </section>
-            <section class="right col-element">
-                <h3>Loan</h3>
-                <div 
-                    id="loan_container"
-                    hx-swap="outerHTML"
-                    hx-get="{% url 'account_management_app:loan' account_number=account.account_number customer_id=customer.id  %}"
-                    hx-trigger="load">
-                </div>
-            </section>
+
+                </section>
+    
+                    
+
+
+
+
             
-            <section>
-                <h3>All transactions</h3>
 
-                <table>
-                    <thead>
-                        <tr>
-
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Note</th>
-
-                        </tr>
-                    </thead>
-                    {% for transaction in transactions%}
-
-                    <tbody>
-                        <tr>
-
-                            <td>{{transaction.created_timestamp}}</td>
-                            <td>{{transaction.amount}}</td>
-                            <td>{{transaction.note}}</td>
-
-                        </tr>
-
-                    </tbody>
-                    {% endfor %}
-
-                </table>
-
-
-            </section>
-            </div>
 	</div>
 </div>
 

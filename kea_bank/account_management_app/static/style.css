@@ -199,8 +199,8 @@ button{
 
 #modal > .modal-content {
 	margin-top:10vh;
-	width:80%;
-	max-width:600px;
+	width:100%;
+	max-width:1000px;
 	border:solid 1px #999;
 	border-radius:8px;
 	background-color:var(--white);
@@ -244,5 +244,11 @@ button{
 	0% {transform: scale(1);}
 	100% {transform: scale(0.9);}
 } 
+
+.popup-wrapper{
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+}
 
 
