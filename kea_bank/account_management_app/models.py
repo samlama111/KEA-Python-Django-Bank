@@ -52,6 +52,17 @@ class Account(models.Model):
         my_transactions = Ledger.objects.filter(account=self)
         return my_transactions
 
+    def get_loan_transactions(self):
+        loan_transactions = Ledger.objects.filter(account=self, is_loan=True)
+        return loan_transactions
+
+    def get_amount_owed(self):
+        loan_transactions = self.get_loan_transactions()
+        if loan_transactions.count() == 0:
+            return 0
+        my_loan_transactions_with_balance = loan_transactions.aggregate(balance=Sum("amount"))
+        return my_loan_transactions_with_balance['balance']
+
     @property
     def balance(self):
         my_transactions = self.get_transactions()
@@ -60,24 +71,24 @@ class Account(models.Model):
         my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
         return my_transactions_with_balance['balance']
     
-    
-    def make_payment(self, amount, account_number):
-        # TODO: replace 9999 with bank's account number
-        if self.balance < int(amount) and self.account_number != 9999:
+
+    def make_payment(self, amount, account_number, is_loan=False):
+        if is_loan==False and self.balance < int(amount):
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
             transaction_id = uuid.uuid4()
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, note='', variable_symbol='')
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', variable_symbol='')
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='')
+            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='')
     
 
 class Ledger(models.Model):
     transaction_id = models.UUIDField(default = uuid.uuid4, editable=False)
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     is_creditor = models.BooleanField(default=False)
+    is_loan = models.BooleanField(default=False)
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=100)

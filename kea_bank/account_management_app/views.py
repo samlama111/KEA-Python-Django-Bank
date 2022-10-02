@@ -19,21 +19,27 @@ def index(request):
 @login_required(login_url='login_app:login')
 def loan(request, account_number):
     customer = request.user.customer
+    my_account = Account.objects.get(account_number=account_number)
+    amount_owed = my_account.get_amount_owed()
+    loan_transactions = my_account.get_loan_transactions()
 
     if request.method == 'POST':
         # TODO: replace 9999 with the bank's account number
         our_account = Account.objects.get(account_number=9999)
-        our_account.make_payment(request.POST['amount'], account_number)
-        my_account = Account.objects.get(account_number=account_number)
+        our_account.make_payment(request.POST['amount'], account_number, is_loan=True)
         transactions = my_account.get_transactions
         return render(request, 'account_management_app/account_details.html', {
             'account': my_account,
-            'transactions': transactions
+            'transactions': transactions,
+            'amount_owed': amount_owed,
+            'loan_transactions': loan_transactions
         })
     else:
         return render(request, 'account_management_app/loan.html', {
             'account_number': account_number,
-            'customer': customer
+            'customer': customer,
+            'amount_owed': amount_owed,
+            'loan_transactions': loan_transactions
         })
 
 @login_required(login_url='login_app:login')
