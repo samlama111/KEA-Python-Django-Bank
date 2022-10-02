@@ -13,14 +13,39 @@
 </head>
 <body>
 
-    <nav>
-        <a>Account</a>
-        <a>My profile</a>
-    </nav>
+    <main >
+        <div class="navigation">
+            <a href="/">
+                <img id="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+            </a>
+            <nav>
 
-    {% block content %}
-    {% endblock %}
-
+                <a id="nav" href="/">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/dashboard.png' %}" alt="dashboard">
+                        <p>Dashboard</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'account_management_app:my_profile' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>My profile</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'login_app:logout' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>Sign out</p>
+                    </div>
+                </a>
+            </nav>
+        </div>
+    
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
     
 </body>
 </html>

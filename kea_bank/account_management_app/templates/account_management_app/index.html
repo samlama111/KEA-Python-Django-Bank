@@ -1,36 +1,51 @@
 {% extends "account_management_app/base.html" %}
 {% block content %}
 
-<div>
-    <h1 class="heading">Welcome</h1>
+<div class="account-wrapper">
+    <h1>Dashboard</h1>
+    <p> Welcome {{customer}} !</p>
+
+    <div class="total-balance">
+        <p>YOUR TOTAL BALANCE</p>
+
+        <p id="amount_balance">{{total_balance}}</p>
+
+    </div>
+
+
+
 
     <div class="payment-list">
-        <h2>Payment list</h2>
-        {% for payment in payments %}
+        <div class="accounts">
+            <h2>Your accounts</h2>
+            {% for account in accounts %}
+        
+            <div class="account_number" id="{{account.account_number }}"
+                 class="clickable"
+                 hx-get="{% url 'account_management_app:account_details' account.account_number %}"
+                 hx-trigger="click"
+                 hx-target="this"
+                 hx-swap="outerHTML">
+                <div>{{account.account_number}}
 
-        <ul>
-            <li>{{payment}}</li>
-        </ul>
 
-        {% endfor %}
-        <hr>
+                </div>
+            </div>
+            {% endfor %}
+
+
+            
+
+
+        </div>
+
     </div>
 
-    <div class="balance">
-        <h2>Balance</h2>
-        {{balance}}
-        <hr>
-    </div>
+    
 
-    <div class="sending-money">
-        <h2>Sending money</h2>
-        <form action="">
-            <input name="amount_filed" type="number" placeholder="Amount you want to transfer">
-            <input name="account_numebr" type="text" placeholder="Account number" >
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-
+    {% if error %}
+        {{ error }}
+    {% endif %}
 
 </div>
 
