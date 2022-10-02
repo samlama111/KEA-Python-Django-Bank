@@ -25,8 +25,10 @@ def loan(request, account_number):
         our_account = Account.objects.get(account_number=9999)
         our_account.make_payment(request.POST['amount'], account_number)
         my_account = Account.objects.get(account_number=account_number)
+        transactions = my_account.get_transactions
         return render(request, 'account_management_app/account_details.html', {
-            'account': my_account
+            'account': my_account,
+            'transactions': transactions
         })
     else:
         return render(request, 'account_management_app/loan.html', {
