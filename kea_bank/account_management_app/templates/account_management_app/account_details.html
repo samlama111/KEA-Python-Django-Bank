@@ -1,5 +1,3 @@
-
-
 <div id="modal" _="on closeModal">
 	<div class="modal-content">
         <div id="account_{{account.account_number}}">
@@ -61,7 +59,7 @@
                     <div 
                         id="loan_container"
                         hx-swap="outerHTML"
-                        hx-get="{% url 'account_management_app:loan' account_number=account.account_number customer_id=customer.id  %}"
+                        hx-get="{% url 'account_management_app:loan' account_number=account.account_number %}"
                         hx-trigger="load">
                     </div>
                 </section>
