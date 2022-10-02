@@ -22,6 +22,14 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
+    @property
+    def total_balance(self):
+        accounts = Account.objects.filter(customer=self)
+        total_balance = 0
+        for item in accounts:
+            total_balance += item.balance
+        return total_balance
+
 
 class Account(models.Model):
     account_number = models.IntegerField(unique=True)

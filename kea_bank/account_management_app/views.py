@@ -8,9 +8,7 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     customer = request.user.customer
     accounts = Account.objects.filter(customer=customer)
-    total_balance = 0
-    for item in accounts:
-        total_balance += item.balance
+    total_balance = customer.total_balance
 
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
@@ -20,7 +18,7 @@ def index(request):
 
 @login_required(login_url='login_app:login')
 def loan(request, account_number, customer_id):
-    customer = Customer.objects.get(id = customer_id)
+    customer = request.user.customer
 
     if request.method == 'POST':
         # TODO: replace 9999 with the bank's account number
@@ -38,13 +36,15 @@ def loan(request, account_number, customer_id):
 
 @login_required(login_url='login_app:login')
 def transfer(request, account_number):
+    customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.filter(customer=request.user.customer)
    
     try:
         my_account.make_payment(request.POST['amount'], request.POST['account_number'])
         context = {
-            'accounts': accounts
+            'accounts': accounts,
+            'total_balance': customer.total_balance
         }
     except ObjectDoesNotExist as objectError:
         context = { 
