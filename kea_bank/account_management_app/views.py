@@ -64,10 +64,8 @@ def transfer(request, account_number):
     }
     try:
         my_account.make_payment(request.POST['amount'], request.POST['account_number'])
-    except ObjectDoesNotExist as objectError:
-        context['error'] = f'there was an error: {objectError}'
     except Exception as e:
-        context['error'] = f'there was an error: {e.message}'
+        context['error'] = f'there was an error: {e}'
 
     return render(request, 'account_management_app/index.html', context)
 

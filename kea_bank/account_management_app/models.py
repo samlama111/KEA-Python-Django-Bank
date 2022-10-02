@@ -73,6 +73,9 @@ class Account(models.Model):
     
 
     def make_payment(self, amount, account_number, is_loan=False):
+        if int(amount) < 0:
+            raise ValidationError('Please use a positive amount')
+
         if is_loan==False and self.balance < int(amount):
             raise ValidationError('Balance is too low')
 
