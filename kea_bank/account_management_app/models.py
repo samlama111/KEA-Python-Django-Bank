@@ -1,3 +1,4 @@
+import uuid
 from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.db.models import Sum
@@ -40,7 +41,6 @@ class Account(models.Model):
         PRIVATE='private'
         BUSINESS='business'
         LOAN='loan'
-        BANK='bank'
 
     account_type = models.CharField(
         max_length=10,
@@ -69,16 +69,21 @@ class Account(models.Model):
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), note='', variable_symbol='')
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), note='', variable_symbol='')
+            transaction_id = uuid.uuid4()
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, note='', variable_symbol='')
+            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', variable_symbol='')
     
 
 class Ledger(models.Model):
+    transaction_id = models.UUIDField(default = uuid.uuid4, editable=False)
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     is_creditor = models.BooleanField(default=False)
+    # TODO: change data type
     amount = models.IntegerField()
     created_timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=100)
     variable_symbol = models.CharField(max_length=30)
 
+    class Meta:
+        unique_together = ['transaction_id', 'account']
     
