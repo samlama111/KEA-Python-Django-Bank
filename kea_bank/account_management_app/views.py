@@ -16,8 +16,7 @@ def index(request):
         'total_balance': total_balance
     })
 
-@login_required(login_url='login_app:login')
-def loan(request, account_number):
+def make_loan(request, account_number, pay_back=False):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
     amount_owed = my_account.get_amount_owed()
@@ -26,7 +25,10 @@ def loan(request, account_number):
     if request.method == 'POST':
         # TODO: replace 9999 with the bank's account number
         our_account = Account.objects.get(account_number=9999)
-        our_account.make_payment(request.POST['amount'], account_number, is_loan=True)
+        if pay_back:
+            my_account.make_payment(request.POST['amount'], our_account.account_number, is_loan=True)
+        else:
+            our_account.make_payment(request.POST['amount'], account_number, is_loan=True)
         transactions = my_account.get_transactions
         return render(request, 'account_management_app/account_details.html', {
             'account': my_account,
@@ -41,6 +43,14 @@ def loan(request, account_number):
             'amount_owed': amount_owed,
             'loan_transactions': loan_transactions
         })
+
+@login_required(login_url='login_app:login')
+def loan(request, account_number):
+    return make_loan(request, account_number=account_number)
+
+@login_required(login_url='login_app:login')
+def pay_back_loan(request, account_number):
+    return make_loan(request, account_number=account_number, pay_back=True)
 
 @login_required(login_url='login_app:login')
 def transfer(request, account_number):

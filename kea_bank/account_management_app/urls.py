@@ -9,4 +9,5 @@ urlpatterns = [
     path('my-profile/', views.my_profile, name="my_profile"),
     path('account_details/<int:account_number>/', views.account_details, name="account_details"),
     path('loan/<int:account_number>/', views.loan, name="loan"),
+    path('loan/<int:account_number>/pay/', views.pay_back_loan, name="pay_back_loan"),
 ]

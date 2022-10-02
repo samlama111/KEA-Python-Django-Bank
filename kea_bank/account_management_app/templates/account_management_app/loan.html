@@ -23,7 +23,7 @@
         {% csrf_token %}
             <input type="number" name="amount" placeholder="Amount" />
             <button
-            hx-post="{% url 'account_management_app:loan' account_number=account_number %}"
+            hx-post="{% url 'account_management_app:pay_back_loan' account_number=account_number %}"
             hx-trigger="click"
             hx-target="#account_{{account_number}}"
             hx-swap="outerHTML">
