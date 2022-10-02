@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from . models import Account, Customer
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
 
-
-
+@login_required(login_url='login_app:login')
 def index(request):
     accounts = Account.objects.all()
     accounts_balance_array = []
@@ -20,6 +19,7 @@ def index(request):
         'total_balance': total_balance
     })
 
+@login_required(login_url='login_app:login')
 def loan(request, account_number, customer_id):
     customer = Customer.objects.get(id = customer_id)
 
@@ -37,7 +37,7 @@ def loan(request, account_number, customer_id):
             'customer': customer
         })
 
-
+@login_required(login_url='login_app:login')
 def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.all()
@@ -59,6 +59,7 @@ def transfer(request, account_number):
         }
     return render(request, 'account_management_app/index.html', context)
 
+@login_required(login_url='login_app:login')
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
     customer = request.user
@@ -68,8 +69,7 @@ def account_details(request, account_number):
         'customer':customer
     })
 
-
-
+@login_required(login_url='/accounts/login/')
 def my_profile(request, customer_id):
     customer = Customer.objects.get(id = customer_id)
     return render(request, 'account_management_app/my_profile.html', {
