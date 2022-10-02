@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render
 from . models import Account, Customer
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,12 +24,17 @@ def make_loan(request, account_number, pay_back=False):
     loan_transactions = my_account.get_loan_transactions()
 
     if request.method == 'POST':
+        amount = Decimal(request.POST['amount'])
         # TODO: replace 9999 with the bank's account number
         our_account = Account.objects.get(account_number=9999)
         if pay_back:
-            my_account.make_payment(request.POST['amount'], our_account.account_number, is_loan=True)
+            if amount_owed >= amount:
+                my_account.make_payment(amount, our_account.account_number, is_loan=True)
+            else:
+                # TODO: display error message
+                print('Cant return more than what you owe')
         else:
-            our_account.make_payment(request.POST['amount'], account_number, is_loan=True)
+            our_account.make_payment(amount, account_number, is_loan=True)
         transactions = my_account.get_transactions
         return render(request, 'account_management_app/account_details.html', {
             'account': my_account,
@@ -63,7 +69,7 @@ def transfer(request, account_number):
         'total_balance': customer.total_balance
     }
     try:
-        my_account.make_payment(request.POST['amount'], request.POST['account_number'])
+        my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
     except Exception as e:
         context['error'] = f'there was an error: {e}'
 
