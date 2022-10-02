@@ -20,8 +20,8 @@
                         <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
                             {% csrf_token %}
                             <input name="amount" type="number" placeholder="Amount">
-                            <input name="account_number" type="number" placeholder="Account number">
-                            <input name="note" type="number" placeholder="Note">
+                            <input name="account_number" type="text" placeholder="Account number">
+                            <input name="note" type="text" placeholder="Note">
                             <button>
                                 Send
                             </button>
