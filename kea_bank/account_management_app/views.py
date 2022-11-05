@@ -6,13 +6,13 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login_app:login')
 def index(request):
-    customer = request.user.customer
-    accounts = Account.objects.filter(customer=customer)
-    total_balance = customer.total_balance
+    user = request.user
+    accounts = Account.objects.filter(user=user)
+    total_balance = user.customer.total_balance
 
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
-        'customer': request.user,
+        'customer': user,
         'total_balance': total_balance
     })
 
@@ -24,8 +24,7 @@ def make_loan(request, account_number, pay_back=False):
 
     if request.method == 'POST':
         amount = Decimal(request.POST['amount'])
-        # TODO: replace 9999 with the bank's account number
-        our_account = Account.objects.get(account_number=9999)
+        our_account = Account.objects.get(account_number=1)
         if pay_back:
             if amount_owed >= amount:
                 my_account.make_payment(amount, our_account.account_number, is_loan=True)
@@ -61,7 +60,7 @@ def pay_back_loan(request, account_number):
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
-    accounts = Account.objects.filter(customer=request.user.customer)
+    accounts = Account.objects.filter(user=request.user)
    
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])

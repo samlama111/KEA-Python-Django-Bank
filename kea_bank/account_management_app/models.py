@@ -3,7 +3,6 @@ from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
-from django.db.models import Sum
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -25,7 +24,7 @@ class Customer(models.Model):
 
     @property
     def total_balance(self):
-        accounts = Account.objects.filter(customer=self)
+        accounts = Account.objects.filter(user=self.user)
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -33,9 +32,10 @@ class Customer(models.Model):
 
 
 class Account(models.Model):
-    account_number = models.IntegerField(unique=True)
+    account_number = models.AutoField(primary_key=True)
     is_customer = models.BooleanField(default=True)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
     
     class AccountType(models.TextChoices):
         PRIVATE='private'
