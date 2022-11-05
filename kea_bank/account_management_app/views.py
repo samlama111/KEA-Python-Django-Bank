@@ -90,3 +90,11 @@ def my_profile(request):
     return render(request, 'account_management_app/my_profile.html', {
         'customer': customer
     })
+
+def all_accounts(request):
+    accounts = Account.objects.all()
+    context = {
+        'accounts': accounts
+    }
+
+    return render(request, 'account_management_app/all_accounts.html', context)
