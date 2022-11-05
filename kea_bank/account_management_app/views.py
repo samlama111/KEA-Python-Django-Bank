@@ -63,15 +63,15 @@ def transfer(request, account_number):
     my_account = Account.objects.get(account_number=account_number)
     accounts = Account.objects.filter(customer=request.user.customer)
    
-    context = {
-        'accounts': accounts,
-        'total_balance': customer.total_balance
-    }
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
     except Exception as e:
         context['error'] = f'there was an error: {e}'
 
+    context = {
+        'accounts': accounts,
+        'total_balance': customer.total_balance
+    }
     return render(request, 'account_management_app/index.html', context)
 
 @login_required(login_url='login_app:login')
