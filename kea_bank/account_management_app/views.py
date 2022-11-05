@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.shortcuts import render
-from . models import Account, Customer
-from django.core.exceptions import ObjectDoesNotExist
+from . models import Account
 from django.contrib.auth.decorators import login_required
 
 
