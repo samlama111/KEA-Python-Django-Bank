@@ -1,0 +1,19 @@
+
+{% extends "employee_app/base.html" %}
+{% block content %}
+
+<h1>All customers</h1>
+
+{% for customer in customers %}
+<p>{{customer.user.first_name}}</p>
+<p>{{customer.user.last_name}}</p>
+<p>{{customer.user.username}}</p>
+<p>{{customer.user.email}}</p>
+
+
+
+{% endfor %}
+
+
+
+{% endblock %}
