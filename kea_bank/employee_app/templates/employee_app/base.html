@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"  href="{% static 'style.css' %}" type="text/css" media="all">
+    <script src="https://unpkg.com/htmx.org@1.8.0" defer></script>
+
+    <title>Employee</title>
+</head>
+<body>
+
+    <main >
+        <div class="navigation">
+            <a href="/">
+                <img id="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+            </a>
+            <nav>
+
+                <a id="nav" href="/bank">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/dashboard.png' %}" alt="dashboard">
+                        <p>Dashboard</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'employee_app:all_customers' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>View all customers</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'employee_app:create_customer' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>Create customer </p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'employee_app:my_profile' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
+                        <p>My profile</p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'login_app:logout' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/logout.png' %}" alt="profile">
+                        <p>Sign out</p>
+                    </div>
+                </a>
+            </nav>
+        </div>
+    
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    
+</body>
+</html>

@@ -1,14 +1,12 @@
 from django.urls import path
 from . import views
 
-app_name = 'account_management_app'
+app_name = 'employee_app'
 
 urlpatterns = [
     path('', views.index, name="index"),
-    path('transfer/<int:account_number>/', views.transfer, name="transfer"),
+    path('all-customers/', views.all_customers,  name="all_customers"),
     path('my-profile/', views.my_profile, name="my_profile"),
+    path('create-customer/', views.create_customer, name="create_customer"),
     path('account_details/<int:account_number>/', views.account_details, name="account_details"),
-    path('loan/<int:account_number>/', views.loan, name="loan"),
-    path('loan/<int:account_number>/pay/', views.pay_back_loan, name="pay_back_loan"),
-
 ]

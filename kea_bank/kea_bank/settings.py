@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'login_app',
     'account_management_app',
-    'employee_app'
+    'employee_app',
 
 ]
 
@@ -122,7 +122,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'account_management_app/static')
+    os.path.join(BASE_DIR, 'kea_bank/static')
 ]
 
 # Default primary key field type
