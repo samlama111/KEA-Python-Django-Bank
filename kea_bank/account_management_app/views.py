@@ -85,7 +85,8 @@ def account_details(request, account_number):
 
 @login_required(login_url='/accounts/login/')
 def my_profile(request):
-    customer = request.user.customer
+    user = request.user
     return render(request, 'account_management_app/my_profile.html', {
-        'customer': customer
+        'customer': user.customer,
+        'user': user
     })
