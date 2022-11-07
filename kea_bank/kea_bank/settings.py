@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#for development only - to be changed in production environment
+ALLOWED_IPS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -40,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'login_app',
     'account_management_app',
-
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ipcheck_middleware.middleware.IPCheckMiddleware',
 ]
 
 ROOT_URLCONF = 'kea_bank.urls'
