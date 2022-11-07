@@ -24,7 +24,8 @@ def make_loan(request, account_number, pay_back=False):
 
     if request.method == 'POST':
         amount = Decimal(request.POST['amount'])
-        our_account = Account.objects.get(account_number=1)
+        # gets banks operational account
+        our_account = Account.objects.filter(is_customer=False)[0]
         if pay_back:
             if amount_owed >= amount:
                 my_account.make_payment(amount, our_account.account_number, is_loan=True)
