@@ -2,6 +2,7 @@ import secrets
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from account_management_app.models import Account, Customer
+from employee_app.models import Employee
 
 class Command(BaseCommand):
     help = 'Sets up the banks accounts'
@@ -32,5 +33,13 @@ class Command(BaseCommand):
         
         default_account = Account.objects.create(user=default_user, name='Checking account', is_customer=True)
         default_account.save()
+
+        default_user_employee = User.objects.create_user('employee', email='employee@gmail.com', password='test123')
+        default_user_employee.first_name = 'Default Employee'
+        default_user_employee.last_name  = 'Employee'
+        default_user_employee.save()
+
+        default_employee=Employee(user=default_user_employee)
+        default_employee.save()
 
         
