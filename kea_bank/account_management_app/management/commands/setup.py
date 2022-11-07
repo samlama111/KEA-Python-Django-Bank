@@ -27,7 +27,7 @@ class Command(BaseCommand):
         default_user.last_name  = 'User'
         default_user.save()
         
-        default_customer = Customer(user=default_user, phone_number='555666')
+        default_customer = Customer(user=default_user, phone_number='555666', rank='silver')
         default_customer.save()
         
         default_account = Account.objects.create(user=default_user, name='Checking account', is_customer=True)
