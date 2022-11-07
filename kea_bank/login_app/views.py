@@ -28,27 +28,5 @@ def password_reset(request):
    pass
 
 
-def sign_up(request):
-   context = {}
-   if request.method == "POST":
-      password = request.POST['password']
-      confirm_password = request.POST['confirm_password']
-      user_name = request.POST['user']
-      email = request.POST['email']
-      if password == confirm_password:
-            if User.objects.create_user(user_name, email, password):
-               return HttpResponseRedirect(reverse('login_app:login'))
-            else:
-               context = {
-                  'error': 'Could not create user account - please try again.'
-               }
-      else:
-            context = {
-               'error': 'Passwords did not match. Please try again.'
-            }
-   return render(request, 'login_app/sign_up.html', context)
-
-
-
 def delete_account(request):
    pass
