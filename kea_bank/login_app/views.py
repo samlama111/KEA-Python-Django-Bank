@@ -8,8 +8,13 @@ def login(request):
    context = {}
 
    if request.method == "POST":
-      user = authenticate(request, username=request.POST['user'], password=request.POST['password'])
+      user = authenticate(request, username=request.POST['user'], password=request.POST['password'])    
+      username=request.POST['user']              
       if user:
+         if username =='employee':
+            dj_login(request, user)
+            return HttpResponseRedirect(reverse('employee_app:index'))
+         else:
             dj_login(request, user)
             return HttpResponseRedirect(reverse('account_management_app:index'))
       else:
