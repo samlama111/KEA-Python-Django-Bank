@@ -6,13 +6,13 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login_app:login')
 def index(request):
-    customer = request.user.customer
-    accounts = Account.objects.filter(customer=customer)
-    total_balance = customer.total_balance
+    user = request.user
+    accounts = Account.objects.filter(user=user)
+    total_balance = user.customer.total_balance
 
     return render(request, 'account_management_app/index.html', {
         'accounts': accounts,
-        'customer': request.user,
+        'customer': user,
         'total_balance': total_balance
     })
 
@@ -23,9 +23,11 @@ def make_loan(request, account_number, pay_back=False):
     loan_transactions = my_account.get_loan_transactions()
 
     if request.method == 'POST':
+        if customer.rank == "basic":
+            print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
-        # TODO: replace 9999 with the bank's account number
-        our_account = Account.objects.get(account_number=9999)
+        # gets banks operational account
+        our_account = Account.objects.filter(is_customer=False)[0]
         if pay_back:
             if amount_owed >= amount:
                 my_account.make_payment(amount, our_account.account_number, is_loan=True)
@@ -61,17 +63,17 @@ def pay_back_loan(request, account_number):
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
-    accounts = Account.objects.filter(customer=request.user.customer)
+    accounts = Account.objects.filter(user=request.user)
    
-    context = {
-        'accounts': accounts,
-        'total_balance': customer.total_balance
-    }
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
     except Exception as e:
         context['error'] = f'there was an error: {e}'
 
+    context = {
+        'accounts': accounts,
+        'total_balance': customer.total_balance
+    }
     return render(request, 'account_management_app/index.html', context)
 
 @login_required(login_url='login_app:login')
@@ -86,15 +88,8 @@ def account_details(request, account_number):
 
 @login_required(login_url='/accounts/login/')
 def my_profile(request):
-    customer = request.user.customer
+    user = request.user
     return render(request, 'account_management_app/my_profile.html', {
-        'customer': customer
+        'customer': user.customer,
+        'user': user
     })
-
-def all_accounts(request):
-    accounts = Account.objects.all()
-    context = {
-        'accounts': accounts
-    }
-
-    return render(request, 'account_management_app/all_accounts.html', context)
