@@ -23,6 +23,8 @@ def make_loan(request, account_number, pay_back=False):
     loan_transactions = my_account.get_loan_transactions()
 
     if request.method == 'POST':
+        if customer.rank == "basic":
+            print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
         # gets banks operational account
         our_account = Account.objects.filter(is_customer=False)[0]
