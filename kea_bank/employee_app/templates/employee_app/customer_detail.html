@@ -13,5 +13,12 @@
 
 <div class="accounts">
     <h2>Accounts</h2>
+    {% for account in accounts %}
+        <a href="{% url 'employee_app:account_detail' account_number=account.account_number  %}">
+            {{account.account_number}}
+        </a> 
+
+    {% endfor %}
+    <p></p>
 </div>
 {% endblock %}

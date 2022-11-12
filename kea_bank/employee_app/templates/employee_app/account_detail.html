@@ -1,0 +1,42 @@
+
+{% extends "employee_app/base.html" %}
+{% block content %}
+
+
+<div clas="account-details">
+    <h2>Account detail</h2>
+    <p>Account number: {{account.account_number}}</p>
+    <p>Balance: {{account.balance}} </p>
+</div>
+
+<div class="transaction">
+    <h2>Transaction</h2>
+    <table>
+        <thead>
+            <tr>
+
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Note</th>
+
+            </tr>
+        </thead>
+        {% for transaction in transactions%}
+
+        <tbody>
+            <tr>
+
+                <td>{{transaction.created_timestamp}}</td>
+                <td>{{transaction.amount}}</td>
+                <td>{{transaction.note}}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+
+
+
+
+
+{% endblock %}
