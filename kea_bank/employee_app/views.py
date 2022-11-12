@@ -12,26 +12,35 @@ from . models import Employee
 @login_required(login_url='login_app:login')
 def index(request):
     if hasattr(request.user,'employee'):
-        return render(request, 'employee_app/index.html', {})
+        try:
+            return render(request, 'employee_app/index.html', {})
+        except Customer.DoesNotExist:
+            return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
 @login_required(login_url='login_app:login')
 def all_customers(request):
     if hasattr(request.user,'employee'):
-        customers = Customer.objects.all()
-        context = {
-            'customers': customers,
-        }
+        try:
+            customers = Customer.objects.all()
+            context = {
+                'customers': customers,
+            }
 
-        return render(request, 'employee_app/all_customers.html', context)
+            return render(request, 'employee_app/all_customers.html', context)
+        except Customer.DoesNotExist:
+            return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
 @login_required(login_url='login_app:login')
 def my_profile(request):
     if hasattr(request.user,'employee'):
-        return render(request, 'employee_app/index.html', {})
+        try:
+            return render(request, 'employee_app/index.html', {})
+        except Customer.DoesNotExist:
+            return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
@@ -49,7 +58,7 @@ def account_detail(request, account_number):
             return render(request, 'employee_app/account_detail.html', context)
 
         except Customer.DoesNotExist:
-            raise Http404("Customer does not exist")
+            return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
