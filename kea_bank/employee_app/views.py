@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 
 
 from account_management_app.models import Customer
+from account_management_app.models import Account
+
 from . models import Employee
 
 @login_required(login_url='login_app:login')
@@ -19,7 +21,7 @@ def all_customers(request):
     if hasattr(request.user,'employee'):
         customers = Customer.objects.all()
         context = {
-            'customers': customers
+            'customers': customers,
         }
 
         return render(request, 'employee_app/all_customers.html', context)
@@ -44,5 +46,22 @@ def account_details(request):
 def create_customer(request):
     if hasattr(request.user,'employee'):
         return render(request, 'employee_app/index.html', {})
+    else:
+        return render(request, 'login_app/login.html', {})
+
+@login_required(login_url='login_app:login')
+def customer_detail(request, pk):
+    if hasattr(request.user,'employee'):
+        try:
+            customer = Customer.objects.get(pk = pk)
+
+            context = {
+                'customer': customer,
+            }
+            return render(request, 'employee_app/customer_detail.html', context)
+
+        except Customer.DoesNotExist:
+            raise Http404("Customer does not exist")
+
     else:
         return render(request, 'login_app/login.html', {})

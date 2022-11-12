@@ -1,0 +1,17 @@
+{% extends "employee_app/base.html" %}
+{% block content %}
+
+<h2>Customer detail</h2>
+
+<div class="customer-info">
+    <h2>Customer info</h2>
+    <p>Username: {{customer.user.username}}</p>
+    <p>First name: {{customer.user.first_name}}</p>
+    <p>Last name: {{customer.user.last_name}}</p>
+    <p>Email: {{customer.user.email}}</p>
+</div>
+
+<div class="accounts">
+    <h2>Accounts</h2>
+</div>
+{% endblock %}

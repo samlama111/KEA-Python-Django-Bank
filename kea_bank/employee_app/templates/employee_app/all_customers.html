@@ -5,10 +5,13 @@
 <h1>All customers</h1>
 
 {% for customer in customers %}
-<p>{{customer.user.first_name}}</p>
-<p>{{customer.user.last_name}}</p>
-<p>{{customer.user.username}}</p>
-<p>{{customer.user.email}}</p>
+
+<div class="user-wrapper">
+    <a href="{% url 'employee_app:customer_detail' pk=customer.pk %}">
+        {{customer.user.username}}
+    </a>
+
+</div>
 
 
 
