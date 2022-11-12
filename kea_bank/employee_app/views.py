@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 
 from account_management_app.models import Customer
 from account_management_app.models import Account
+from django.shortcuts import redirect
+
 
 from . models import Employee
 
@@ -65,7 +67,11 @@ def account_detail(request, account_number):
 @login_required(login_url='login_app:login')
 def create_customer(request):
     if hasattr(request.user,'employee'):
-        return render(request, 'employee_app/index.html', {})
+        try:
+            return render(request, 'employee_app/index.html', {})
+
+        except Customer.DoesNotExist:
+            return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
@@ -84,6 +90,27 @@ def customer_detail(request, pk):
 
         except Customer.DoesNotExist:
             raise Http404("Customer does not exist")
+
+    else:
+        return render(request, 'login_app/login.html', {})
+
+@login_required(login_url='login_app:login')
+def create_account(request, pk):
+    if hasattr(request.user,'employee'):
+        if request.method == "POST":
+            customer = Customer.objects.get(pk = pk)
+            account = Account(user=customer.user)
+            account.save()
+            context = {
+                'customer': customer,
+                'success': 'Account created'
+            }
+            
+        else:
+            context = {
+                'error': 'Something went wrong'
+        }
+        return render(request, 'employee_app/create_account.html', context )
 
     else:
         return render(request, 'login_app/login.html', {})

@@ -9,15 +9,22 @@
     <p>First name: {{customer.user.first_name}}</p>
     <p>Last name: {{customer.user.last_name}}</p>
     <p>Email: {{customer.user.email}}</p>
+    <p>Rank: {{customer.user.rank}}</p>
+
 </div>
 
 <div class="accounts">
     <h2>Accounts</h2>
+
+    <form action="{% url 'employee_app:create_account' pk=customer.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Create account"></input>
+    </form>
+
     {% for account in accounts %}
         <a href="{% url 'employee_app:account_detail' account_number=account.account_number  %}">
             {{account.account_number}}
         </a> 
-
     {% endfor %}
     <p></p>
 </div>
