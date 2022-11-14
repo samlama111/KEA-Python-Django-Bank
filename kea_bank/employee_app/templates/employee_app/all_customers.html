@@ -6,11 +6,10 @@
 
 {% for customer in customers %}
 
-<div class="user-wrapper">
+<div class="user-wrapper-link">
     <a href="{% url 'employee_app:customer_detail' pk=customer.pk %}">
         {{customer.user.username}}
     </a>
-
 </div>
 
 
