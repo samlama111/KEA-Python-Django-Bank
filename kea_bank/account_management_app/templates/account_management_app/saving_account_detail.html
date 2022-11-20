@@ -9,5 +9,19 @@
     <p>Is saving account: {{account.is_saving_account}}</p>
 </div>
 
+<form action="">
+    <input type="number" placeholder="Amount">
+
+    <select name="accounts">
+        {% for account in all_accounts %}
+
+        <option value="{{account.account_number }}">{{account.account_number}}</option>
+        {% endfor %}
+
+    </select>
+
+    <input type="submit" value="Add">
+</form>
+
 
 {% endblock %}

@@ -156,8 +156,11 @@ def create_saving_account(request):
 def saving_account_detail(request, account_number):
     try:
         account = Account.objects.get(account_number = account_number, is_saving_account=True)
+        all_accounts = Account.objects.filter(user=request.user, is_saving_account=False)
+
         return render(request, 'account_management_app/saving_account_detail.html', {
             'account': account,
+            'all_accounts': all_accounts
         })
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
