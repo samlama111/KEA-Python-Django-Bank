@@ -1,0 +1,13 @@
+{% extends "account_management_app/base.html" %}
+{% block content %}
+
+<h3>Saving account detail</h3>
+<div clas="account-details">
+    <h2>Account detail</h2>
+    <p>Account number: {{account.account_number}}</p>
+    <p>Balance: {{account.balance}} </p>
+    <p>Is saving account: {{account.is_saving_account}}</p>
+</div>
+
+
+{% endblock %}

@@ -10,5 +10,9 @@ urlpatterns = [
     path('account_details/<int:account_number>/', views.account_details, name="account_details"),
     path('loan/<int:account_number>/', views.loan, name="loan"),
     path('loan/<int:account_number>/pay/', views.pay_back_loan, name="pay_back_loan"),
+    path('my_savings/', views.my_savings, name="my_savings"),
+    path('create-saving-account/', views.create_saving_account, name="create_saving_account"),
+    path('saving-account-detail/<int:account_number>/', views.saving_account_detail, name="saving_account_detail"),
+    path('delete-account/<int:account_number>', views.delete_saving_account, name="delete_saving_account")
 
 ]

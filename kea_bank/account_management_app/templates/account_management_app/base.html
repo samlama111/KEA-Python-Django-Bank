@@ -32,6 +32,12 @@
                         <p>My profile</p>
                     </div>
                 </a>
+                <a id="nav" href="{% url 'account_management_app:my_savings' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/savings.png' %}" alt="profile">
+                        <p>My savings</p>
+                    </div>
+                </a>
                 <a id="nav" href="{% url 'login_app:logout' %}">
                     <div class="link-wrapper">
                         <img id="icon" src="{% static 'images/logout.png' %}" alt="profile">
