@@ -22,9 +22,22 @@
 
     <div class="account-wrapper">
         {% for account in accounts %}
-        <a href="{% url 'employee_app:account_detail' account_number=account.account_number  %}">
-            {{account.account_number}}
-        </a> 
+
+        <div class="account-list-wrapper">
+            <a id="account-number" href="{% url 'employee_app:account_detail' account_number=account.account_number  %}">
+                {{account.account_number}}
+            </a> 
+
+            <form action="{% url 'employee_app:delete_account' account_number=account.account_number pk=customer.pk %}" method="POST">
+                {% csrf_token %}
+                <input id="delete-button" type="submit" value="Delete">
+            </form>
+
+        </div>
+
+
+        
+
         {% endfor %}
     </div>
 

@@ -87,7 +87,7 @@ class Account(models.Model):
 
 class Ledger(models.Model):
     transaction_id = models.UUIDField(default = uuid.uuid4, editable=False)
-    account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     is_creditor = models.BooleanField(default=False)
     is_loan = models.BooleanField(default=False)
     amount = models.DecimalField(max_digits=15, decimal_places=4)

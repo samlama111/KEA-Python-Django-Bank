@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import Http404
-from django.views.generic import CreateView,ListView, DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 from account_management_app.models import Customer
@@ -87,10 +88,8 @@ def customer_detail(request, pk):
                 'accounts': accounts,
             }
             return render(request, 'employee_app/customer_detail.html', context)
-
         except Customer.DoesNotExist:
             raise Http404("Customer does not exist")
-
     else:
         return render(request, 'login_app/login.html', {})
 
@@ -105,12 +104,20 @@ def create_account(request, pk):
                 'customer': customer,
                 'success': 'Account created'
             }
-            
         else:
             context = {
                 'error': 'Something went wrong'
         }
         return render(request, 'employee_app/create_account.html', context )
+    else:
+        return render(request, 'login_app/login.html', {})
 
+@login_required(login_url='login_app:login')
+def delete_account(request, account_number, pk):
+    if hasattr(request.user,'employee'):
+        if request.method == "POST":
+            account = Account.objects.get(account_number = account_number)
+            account.delete()
+            return HttpResponseRedirect(reverse('employee_app:customer_detail', kwargs={'pk':pk}))
     else:
         return render(request, 'login_app/login.html', {})

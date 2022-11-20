@@ -301,3 +301,20 @@ a{
 input[type=submit]{
     cursor: pointer;
 }
+
+.account-list-wrapper{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+#account-number{
+    width: 80%;
+}
+
+#delete-button{
+    width: 20%;
+    text-align: center;
+    background-color: #A7333F;
+    color: #fff;
+}
