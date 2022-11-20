@@ -100,15 +100,7 @@ def create_account(request, pk):
             customer = Customer.objects.get(pk = pk)
             account = Account(user=customer.user)
             account.save()
-            context = {
-                'customer': customer,
-                'success': 'Account created'
-            }
-        else:
-            context = {
-                'error': 'Something went wrong'
-        }
-        return render(request, 'employee_app/create_account.html', context )
+            return HttpResponseRedirect(reverse('employee_app:customer_detail', kwargs={'pk':pk}))
     else:
         return render(request, 'login_app/login.html', {})
 

@@ -305,6 +305,8 @@ input[type=submit]{
 .account-list-wrapper{
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: end;
     gap: 20px;
 }
 
@@ -313,8 +315,10 @@ input[type=submit]{
 }
 
 #delete-button{
-    width: 20%;
+    width: 100%;
     text-align: center;
     background-color: #A7333F;
     color: #fff;
+    height: 40px;
 }
+
