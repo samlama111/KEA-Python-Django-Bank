@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url='login_app:login')
 def index(request):
     user = request.user
-    accounts = Account.objects.filter(user=user)
+    accounts = user.customer.get_accounts()
     total_balance = user.customer.total_balance
 
     return render(request, 'account_management_app/index.html', {
@@ -26,8 +26,7 @@ def make_loan(request, account_number, pay_back=False):
         if customer.rank == "basic":
             print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
-        # gets banks operational account
-        our_account = Account.objects.filter(is_customer=False)[0]
+        our_account = customer.get_bank_operational_account()
         if pay_back:
             if amount_owed >= amount:
                 my_account.make_payment(amount, our_account.account_number, is_loan=True)
@@ -63,7 +62,7 @@ def pay_back_loan(request, account_number):
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
-    accounts = Account.objects.filter(user=request.user)
+    accounts = customer.get_accounts()
    
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])

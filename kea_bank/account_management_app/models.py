@@ -20,9 +20,15 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
+    def get_accounts(self):
+        return Account.objects.filter(user=self.user)
+    
+    def get_bank_operational_account(self):
+        return Account.objects.filter(is_customer=False)[0]
+    
     @property
     def total_balance(self):
-        accounts = Account.objects.filter(user=self.user)
+        accounts = self.get_accounts()
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
