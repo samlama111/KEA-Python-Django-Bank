@@ -14,8 +14,8 @@ class Command(BaseCommand):
         bank_user.is_active = False
         bank_user.save()
         
-        ops_account = Account.objects.create(user=bank_user, is_customer=False, name='Bank Operational Account')
-        ipo_account = Account.objects.create(user=bank_user, is_customer=False, name='Bank Investment Account')
+        ops_account = Account.objects.create(user=bank_user, is_customer=False, name='Bank Operational Account', account_type='operational')
+        ipo_account = Account.objects.create(user=bank_user, is_customer=False, name='Bank Investment Account', account_type='loan')
         ipo_account.make_payment(
             10_000_000,
             ops_account.account_number,

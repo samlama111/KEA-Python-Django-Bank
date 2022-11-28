@@ -24,7 +24,7 @@ class Customer(models.Model):
         return Account.objects.filter(user=self.user)
     
     def get_bank_operational_account(self):
-        return Account.objects.filter(is_customer=False)[0]
+        return Account.objects.get(account_type='operational')
     
     @property
     def total_balance(self):
@@ -42,14 +42,15 @@ class Account(models.Model):
     name = models.CharField(max_length=50)
     
     class AccountType(models.TextChoices):
-        PRIVATE='private'
-        BUSINESS='business'
+        LOCAL='local'
+        EXTERNAL='external'
         LOAN='loan'
+        OPERATIONAL='operational'
 
     account_type = models.CharField(
-        max_length=10,
+        max_length=15,
         choices=AccountType.choices,
-        default=AccountType.PRIVATE
+        default=AccountType.LOCAL
     )
 
     def get_transactions(self):
