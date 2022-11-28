@@ -121,4 +121,20 @@ class Ledger(models.Model):
 
     class Meta:
         unique_together = ['transaction_id', 'account']
-    
+ 
+class ExternalLedgerMetadata(models.Model):
+    token = models.UUIDField(default = uuid.uuid4, editable=False)
+    local_account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    target_bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=15, decimal_places=4)
+    created_timestamp = models.DateTimeField(auto_now_add=True)
+    class StatusType(models.TextChoices):
+        PENDING='pending'
+        CONFIRMED='confirmed'
+        CANCELLED='cancelled'
+
+    status = models.CharField(
+        max_length=15,
+        choices=StatusType.choices,
+        default=StatusType.PENDING
+    )
