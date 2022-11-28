@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Customer, Ledger, Bank
+from .models import Account, Customer, Ledger, Bank, ExternalLedgerMetadata
 
 class LedgerAdmin(admin.ModelAdmin):
     readonly_fields = ('id', 'transaction_id', 'account', )
@@ -8,4 +8,5 @@ class LedgerAdmin(admin.ModelAdmin):
 admin.site.register(Account)
 admin.site.register(Customer)
 admin.site.register(Bank)
+admin.site.register(ExternalLedgerMetadata)
 admin.site.register(Ledger, LedgerAdmin)
