@@ -8,7 +8,18 @@
     <p>First name: {{customer.user.first_name}}</p>
     <p>Last name: {{customer.user.last_name}}</p>
     <p>Email: {{customer.user.email}}</p>
-    <p>Rank: {{customer.user.rank}}</p>
+    <p>Rank: {{customer.rank}}</p>
+
+    <form action="{% url 'employee_app:update_customer' pk=customer.pk %}" method="POST">
+        {% csrf_token %}
+    <select name="rank">
+        <option {%if customer.rank == "basic"%} selected="selected" {% endif %} value="basic">Basic</option>
+        <option {%if customer.rank == "silver"%} selected="selected" {% endif %} value="silver">Silver</option>
+        <option {%if customer.rank == "gold"%} selected="selected" {% endif %} value="gold">Gold</option>
+    </select>
+    <br><br>
+    <input type="submit" value="Save changes">
+    </form>
 
 </div>
 

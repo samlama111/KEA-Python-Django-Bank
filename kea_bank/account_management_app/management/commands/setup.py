@@ -23,7 +23,7 @@ class Command(BaseCommand):
             is_loan=True
         )
 
-        default_user = User.objects.create_user('user', email='user@dummy.com', password='test123')
+        default_user = User.objects.create_user('user', email='t', password='test123')
         default_user.first_name = 'Default'
         default_user.last_name  = 'User'
         default_user.save()

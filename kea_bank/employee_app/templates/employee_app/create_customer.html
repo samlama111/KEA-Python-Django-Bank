@@ -1,0 +1,47 @@
+
+{% extends "employee_app/base.html" %}
+{% block content %}
+
+<div>
+    <h1>Create customer</h1>
+<form action="/bank/create-customer/" method="post">
+                      {% csrf_token %}
+
+
+        <input id="username" name="username" type="text"
+                placeholder="Username" value="username" required>
+
+        <input id ="first_name" name="first_name" type="text"
+                placeholder="First name" value="first_name" required>
+
+        <input id="last_name" name="last_name" type="text"
+                placeholder="Last name" value="last_name" required>
+
+        <input id="email" name="email" type="text"
+                placeholder="Email" value="email" required>
+
+        <input id="password" name="password" type="text"
+                placeholder="Password" value="password123" required>
+
+        <input id="phone_number" name="phone_number" value="31360873" type="text"
+                placeholder="Phone number" required>
+
+
+        <p style="color:green">{{ success }}</p>
+        <p> {{ error }} </p>
+
+
+
+<label for="rank">Choose a rank:</label>
+
+<select name="rank" id="rank">
+  <option value="basic">Basic</option>
+  <option value="silver">Silver</option>
+  <option value="gold">Gold</option>
+</select>
+
+        <button type="submit">Submit</button>
+
+</form>
+</div>
+{% endblock%}

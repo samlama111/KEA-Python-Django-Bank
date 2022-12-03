@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import Http404
 from django.views.generic import CreateView,ListView, DetailView, UpdateView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 from account_management_app.models import Customer
@@ -67,11 +68,33 @@ def account_detail(request, account_number):
 @login_required(login_url='login_app:login')
 def create_customer(request):
     if hasattr(request.user,'employee'):
-        try:
-            return render(request, 'employee_app/index.html', {})
-
-        except Customer.DoesNotExist:
-            return render(request, 'login_app/login.html', {})
+        if (request.method == 'POST'):
+            try:
+                user = User.objects.create_user(
+                    request.POST['username'],
+                    email=request.POST['email'],
+                    password=request.POST['password'],
+                    first_name = request.POST['first_name'],
+                    last_name = request.POST['last_name']
+                )
+                customer = Customer(
+                    user=user,
+                    phone_number=request.POST['phone_number'],
+                    rank=request.POST['rank'],
+                )
+                customer.save()
+                context = {
+                    'customer': customer,
+                    'success': 'Customer ' + customer.user.username + ' created successfully'
+                }
+            except:
+                context = {
+                    'error': 'Error creating customer'
+                }
+                return render(request, 'employee_app/create_customer.html', context)
+            else:
+                return render(request, 'employee_app/create_customer.html', context)
+        return render(request, 'employee_app/create_customer.html', {})
     else:
         return render(request, 'login_app/login.html', {})
 
@@ -95,6 +118,25 @@ def customer_detail(request, pk):
         return render(request, 'login_app/login.html', {})
 
 @login_required(login_url='login_app:login')
+def update_customer(request, pk):
+    if hasattr(request.user,'employee'):
+        try:
+            customer = Customer.objects.get(pk = pk)
+            customer.rank = request.POST['rank']
+            customer.save()
+
+            context = {
+                'customer': customer,
+            }
+            return render(request, 'employee_app/customer_detail.html', context)
+
+        except Customer.DoesNotExist:
+            raise Http404("Customer does not exist")
+
+    else:
+        return render(request, 'login_app/login.html', {})
+
+@login_required(login_url='login_app:login')
 def create_account(request, pk):
     if hasattr(request.user,'employee'):
         if request.method == "POST":
@@ -105,7 +147,7 @@ def create_account(request, pk):
                 'customer': customer,
                 'success': 'Account created'
             }
-            
+
         else:
             context = {
                 'error': 'Something went wrong'
