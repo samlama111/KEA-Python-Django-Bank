@@ -3,13 +3,16 @@ from django.shortcuts import render
 from django.http import Http404
 from . models import Account
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from . models import Customer
+
 @login_required(login_url='login_app:login')
 def index(request):
     try:
         user = request.user
-        accounts = Account.objects.filter(user=user)
+        accounts = Account.objects.filter(user=user, is_saving_account=False)
         total_balance = user.customer.total_balance
 
         return render(request, 'account_management_app/index.html', {
@@ -120,3 +123,83 @@ def my_profile(request):
         })
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
+
+
+@login_required(login_url='/accounts/login/')
+def my_savings(request):
+    try:
+        user = request.user
+
+        accounts = Account.objects.filter(user=user, is_saving_account=True)
+
+        return render(request, 'account_management_app/my_savings.html', {
+            'accounts': accounts
+        })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+
+@login_required(login_url='/accounts/login/')
+def create_saving_account(request):
+    try:
+        user = request.user
+        customer = user.customer
+        saving_account = Account(user=user, is_saving_account=True)
+        saving_account.save()
+        return render(request, 'account_management_app/my_savings.html', {
+            'customer': customer,
+            'user': user
+        })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+
+@login_required(login_url='/accounts/login/')
+def saving_account_detail(request, account_number):
+    try:
+        account = Account.objects.get(account_number = account_number, is_saving_account=True)
+        all_accounts = Account.objects.filter(user=request.user, is_saving_account=False)
+
+        return render(request, 'account_management_app/saving_account_detail.html', {
+            'account': account,
+            'all_accounts': all_accounts
+        })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+
+@login_required(login_url='/accounts/login/')
+def delete_saving_account(request, account_number):
+    try:
+
+         if request.method == "POST":
+            account = Account.objects.get(account_number = account_number)
+            account.delete()
+            return HttpResponseRedirect(reverse('account_management_app:my_savings'))
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+
+@login_required(login_url='/accounts/login/')
+def saving_account_transfer(request, account_number):
+    try:
+        customer = request.user.customer
+        saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
+        print(type(saving_account))
+        if request.method == 'POST':
+            amount = Decimal(request.POST['amount'])
+            transfer_account_number = request.POST.get('accounts')
+            transfer_account = Account.objects.get(account_number=transfer_account_number)
+            transfer_account.make_payment(amount, saving_account.account_number, is_loan=False, is_saving_account=True)
+            transactions = saving_account.get_transactions
+            return render(request, 'account_management_app/saving_account_detail.html', {
+                'account': saving_account,
+                'transactions': transactions,
+                'customer': customer,
+            })
+        else:
+            return render(request, 'account_management_app/saving_account_detail.html', {
+                'account': saving_account,
+                'transactions': transactions,
+                'customer': customer,
+
+            })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+    

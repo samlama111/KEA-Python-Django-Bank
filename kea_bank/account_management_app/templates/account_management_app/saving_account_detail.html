@@ -1,0 +1,30 @@
+{% extends "account_management_app/base.html" %}
+{% block content %}
+
+<h3>Saving account detail</h3>
+<div clas="account-details">
+    <h2>Account detail</h2>
+    <p>Account number: {{account.account_number}}</p>
+    <p>Balance: {{account.balance}} </p>
+    <p>Is saving account: {{account.is_saving_account}}</p>
+</div>
+
+<h3>Transfering money to saving account</h3>
+<form id="saving-transfer" action="{% url 'account_management_app:saving_account_transfer' account.account_number  %}" method="POST">
+    {% csrf_token %}
+    <label for="amount">Type the amount you want to transfer</label>
+    <input type="number" name="amount" placeholder="Amount">
+    <label for="accounts"> Choose the account you want to transfter from</label>
+    <select name="accounts">
+        {% for account_to_transfer in all_accounts %}
+
+        <option  value="{{account_to_transfer.account_number }}">{{account_to_transfer.account_number}}</option>
+        {% endfor %}
+
+    </select>
+
+    <input type="submit" value="Add">
+</form>
+
+
+{% endblock %}

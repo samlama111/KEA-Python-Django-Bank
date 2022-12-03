@@ -34,6 +34,7 @@ class Account(models.Model):
     is_customer = models.BooleanField(default=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    is_saving_account=models.BooleanField(default=False)
     
     class AccountType(models.TextChoices):
         PRIVATE='private'
@@ -53,13 +54,26 @@ class Account(models.Model):
     def get_loan_transactions(self):
         loan_transactions = Ledger.objects.filter(account=self, is_loan=True)
         return loan_transactions
-
+    
     def get_amount_owed(self):
         loan_transactions = self.get_loan_transactions()
         if loan_transactions.count() == 0:
             return 0
         my_loan_transactions_with_balance = loan_transactions.aggregate(balance=Sum("amount"))
         return my_loan_transactions_with_balance['balance']
+    
+    def get_saving_account_transactions(self):
+        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True)
+        return saving_account_transactions
+    
+    @property
+    def saving_account_balance(self):
+        saving_transaction = self.get_saving_account_transactions()
+        if saving_transaction.count() == 0:
+            return 0
+        saving_transaction_with_balance = saving_transaction.aggregate(balance=Sum("amount"))
+        return saving_transaction_with_balance['balance']
+
 
     @property
     def balance(self):
@@ -70,26 +84,30 @@ class Account(models.Model):
         return my_transactions_with_balance['balance']
     
 
-    def make_payment(self, amount, account_number, is_loan=False):
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
         if amount < 0:
             raise ValidationError('Please use a positive amount')
 
         if is_loan==False and self.balance < int(amount):
+            raise ValidationError('Balance is too low')
+        
+        if is_saving_account==False and self.balance < int(amount):
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
             transaction_id = uuid.uuid4()
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='')
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='')
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
     
 
 class Ledger(models.Model):
     transaction_id = models.UUIDField(default = uuid.uuid4, editable=False)
-    account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     is_creditor = models.BooleanField(default=False)
     is_loan = models.BooleanField(default=False)
+    is_saving_account = models.BooleanField(default=False)
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
     note = models.CharField(max_length=100)
