@@ -9,13 +9,16 @@
     <p>Is saving account: {{account.is_saving_account}}</p>
 </div>
 
-<form action="">
-    <input type="number" placeholder="Amount">
-
+<h3>Transfering money to saving account</h3>
+<form id="saving-transfer" action="{% url 'account_management_app:saving_account_transfer' account.account_number  %}" method="POST">
+    {% csrf_token %}
+    <label for="amount">Type the amount you want to transfer</label>
+    <input type="number" name="amount" placeholder="Amount">
+    <label for="accounts"> Choose the account you want to transfter from</label>
     <select name="accounts">
-        {% for account in all_accounts %}
+        {% for account_to_transfer in all_accounts %}
 
-        <option value="{{account.account_number }}">{{account.account_number}}</option>
+        <option  value="{{account_to_transfer.account_number }}">{{account_to_transfer.account_number}}</option>
         {% endfor %}
 
     </select>

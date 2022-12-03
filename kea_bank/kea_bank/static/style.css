@@ -327,3 +327,10 @@ input[type=submit]{
     text-align: right;
 }
 
+#saving-transfer{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: baseline;
+}
+

@@ -176,4 +176,30 @@ def delete_saving_account(request, account_number):
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
 
+@login_required(login_url='/accounts/login/')
+def saving_account_transfer(request, account_number):
+    try:
+        customer = request.user.customer
+        saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
+        print(type(saving_account))
+        if request.method == 'POST':
+            amount = Decimal(request.POST['amount'])
+            transfer_account_number = request.POST.get('accounts')
+            transfer_account = Account.objects.get(account_number=transfer_account_number)
+            transfer_account.make_payment(amount, saving_account.account_number, is_loan=False, is_saving_account=True)
+            transactions = saving_account.get_transactions
+            return render(request, 'account_management_app/saving_account_detail.html', {
+                'account': saving_account,
+                'transactions': transactions,
+                'customer': customer,
+            })
+        else:
+            return render(request, 'account_management_app/saving_account_detail.html', {
+                'account': saving_account,
+                'transactions': transactions,
+                'customer': customer,
 
+            })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+    
