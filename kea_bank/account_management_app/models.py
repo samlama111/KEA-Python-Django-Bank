@@ -84,14 +84,14 @@ class Account(models.Model):
         return my_transactions_with_balance['balance']
     
 
-    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=True):
         if amount < 0:
             raise ValidationError('Please use a positive amount')
 
         if is_loan==False and self.balance < int(amount):
             raise ValidationError('Balance is too low')
         
-        if is_saving_account==False and self.balance < int(amount):
+        if is_saving_account==True and self.balance < int(amount):
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
