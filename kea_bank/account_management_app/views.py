@@ -142,13 +142,9 @@ def my_savings(request):
 def create_saving_account(request):
     try:
         user = request.user
-        customer = user.customer
         saving_account = Account(user=user, is_saving_account=True)
         saving_account.save()
-        return render(request, 'account_management_app/my_savings.html', {
-            'customer': customer,
-            'user': user
-        })
+        return HttpResponseRedirect(reverse('account_management_app:my_savings'))
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
 

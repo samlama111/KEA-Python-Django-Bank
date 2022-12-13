@@ -20,7 +20,8 @@ from . models import Employee
 def index(request):
     if hasattr(request.user,'employee'):
         try:
-            return render(request, 'employee_app/index.html', {})
+            user = request.user
+            return render(request, 'employee_app/index.html', {'user': user})
         except Customer.DoesNotExist:
             return render(request, 'login_app/login.html', {})
     else:
@@ -156,7 +157,7 @@ def create_account(request, pk):
             context = {
                 'error': 'Something went wrong'
         }
-        return render(request, 'employee_app/create_account.html', context )
+        return HttpResponseRedirect(reverse('employee_app:customer_detail', kwargs={'pk':pk}))
 
 @login_required(login_url='login_app:login')
 def delete_account(request, account_number, pk):
@@ -167,3 +168,13 @@ def delete_account(request, account_number, pk):
             return HttpResponseRedirect(reverse('employee_app:customer_detail', kwargs={'pk':pk}))
     else:
         return render(request, 'login_app/login.html', {})
+
+@login_required(login_url='/accounts/login/')
+def my_profile(request):
+    try:
+        user = request.user
+        return render(request, 'employee_app/my_profile.html', {
+            'user': user
+        })
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
