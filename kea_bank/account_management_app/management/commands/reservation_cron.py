@@ -15,7 +15,10 @@ class Command(BaseCommand):
             # TODO: add check how old the transaction is
             print(f'Creating reservation for transfer with ID: {transaction.id}')
             external_bank_url = transaction.receiver_account.bank.api_url
-            print(external_bank_url)
-            # External bank's operation account is 1, sender's account is hardcoded to 2
-            myobj = {'amount': transaction.amount, 'token': transaction.token, 'local_account': 1, 'sender_account': 2}
-            # requests.post(external_bank_url, json = myobj)
+            # External bank's operation account is 1, sender's account is hardcoded to 4
+            myobj = {'amount': int(transaction.amount), 'receiver_account': 1, 'sender_account': 4}
+            res = requests.post(external_bank_url+'/api/v1/transaction', data = myobj)
+            if (res.status_code == 201):  
+                print(f'Reservation created for transfer with ID: {transaction.id}')
+            else:
+                print(f'Reservation failed for transfer with ID: {transaction.id}')
