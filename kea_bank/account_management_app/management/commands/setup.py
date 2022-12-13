@@ -35,4 +35,17 @@ class Command(BaseCommand):
         default_account = Account.objects.create(user=default_user, bank=bank, name='Checking account')
         default_account.save()
 
+        # External account set-up
+        external_bank = Bank.objects.create(bank_id=1001, name="External bank", api_url="http://localhost:3001")
+        
+        external_bank_user = User.objects.create_user('External bank', email='', password=secrets.token_urlsafe(64))
+        external_bank_user.is_active = False
+        external_bank_user.save()
+        
+        local_external_account = Account.objects.create(
+            user=external_bank_user, 
+            bank=external_bank, 
+            name='External Bank Operational Account', 
+            account_type='loan'
+        )
         

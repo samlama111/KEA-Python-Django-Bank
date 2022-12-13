@@ -124,8 +124,8 @@ class Ledger(models.Model):
  
 class ExternalLedgerMetadata(models.Model):
     token = models.UUIDField(default = uuid.uuid4, editable=False)
-    local_account = models.ForeignKey(Account, on_delete=models.PROTECT)
-    target_bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
+    sender_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='sender')
+    receiver_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='receiver')
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
     class StatusType(models.TextChoices):
