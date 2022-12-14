@@ -275,6 +275,7 @@ button{
     flex-direction: column;
     justify-content: center;
     padding-left: 20px;
+    margin-bottom: 10px;
 }
 
 a{
