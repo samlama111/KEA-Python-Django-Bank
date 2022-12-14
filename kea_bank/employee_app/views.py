@@ -20,27 +20,18 @@ from . models import Employee
 def index(request):
     if hasattr(request.user,'employee'):
         try:
-            user = request.user
-            return render(request, 'employee_app/index.html', {'user': user})
-        except Customer.DoesNotExist:
-            return render(request, 'login_app/login.html', {})
-    else:
-        return render(request, 'login_app/login.html', {})
-
-@login_required(login_url='login_app:login')
-def all_customers(request):
-    if hasattr(request.user,'employee'):
-        try:
             customers = Customer.objects.all()
             context = {
                 'customers': customers,
             }
 
-            return render(request, 'employee_app/all_customers.html', context)
+            return render(request, 'employee_app/index.html', context)
         except Customer.DoesNotExist:
             return render(request, 'login_app/login.html', {})
     else:
         return render(request, 'login_app/login.html', {})
+
+
 
 @login_required(login_url='login_app:login')
 def my_profile(request):

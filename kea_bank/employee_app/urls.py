@@ -5,7 +5,6 @@ app_name = 'employee_app'
 
 urlpatterns = [
     path('', views.index, name="index"),
-    path('all-customers/', views.all_customers, name="all_customers"),
     path('customer/<int:pk>/', views.customer_detail, name="customer_detail"),
     path('update-customer/<int:pk>/', views.update_customer, name="update_customer"),
     path('my-profile/', views.my_profile, name="my_profile"),

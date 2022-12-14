@@ -2,7 +2,21 @@
 {% extends "employee_app/base.html" %}
 {% block content %}
 
-<div>
-    <h2>Welcome {{user}}</h2>
+
+<h2>All customers</h2>
+
+{% for customer in customers %}
+
+<div class="user-wrapper-link">
+    <a href="{% url 'employee_app:customer_detail' pk=customer.pk %}">
+        {{customer.user.username}}
+    </a>
 </div>
-{% endblock%}
+
+
+
+{% endfor %}
+
+
+
+{% endblock %}

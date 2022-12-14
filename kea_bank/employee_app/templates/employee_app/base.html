@@ -20,13 +20,7 @@
             </a>
             <nav>
 
-                <a id="nav" href="/bank">
-                    <div class="link-wrapper">
-                        <img id="icon" src="{% static 'images/dashboard.png' %}" alt="dashboard">
-                        <p>Dashboard</p>
-                    </div>
-                </a>
-                <a id="nav" href="{% url 'employee_app:all_customers' %}">
+                <a id="nav" href="{% url 'employee_app:index' %}">
                     <div class="link-wrapper">
                         <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
                         <p>View all customers</p>
