@@ -3,6 +3,11 @@
 
 <h2>My savings</h2>
 
+<div class="total-balance">
+    <p>YOUR TOTAL AMOUNT IN SAVINGS</p>
+    <p id="amount_balance">{{total_balance}}</p>
+</div>
+
 <form action="{% url 'account_management_app:create_saving_account' %}" method="POST">
     {% csrf_token %}
     <input type="submit" value="Create saving account"></input>
@@ -10,22 +15,15 @@
 
 <div class="account-wrapper">
     {% for account in accounts %}
-
     <div class="account-list-wrapper">
         <a id="account-number" href="{% url 'account_management_app:saving_account_detail' account_number=account.account_number  %}">
             {{account.account_number}}
         </a> 
-
         <form action="{% url 'account_management_app:delete_saving_account' account_number=account.account_number  %}" method="POST">
             {% csrf_token %}
             <input id="delete-button" type="submit" value="Delete">
         </form>
-
     </div>
-    
-
     {% endfor %}
 </div>
-
-
 {% endblock %}

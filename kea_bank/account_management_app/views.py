@@ -13,7 +13,7 @@ def index(request):
     try:
         user = request.user
         accounts = Account.objects.filter(user=user, is_saving_account=False)
-        total_balance = user.customer.total_balance
+        total_balance = user.customer.total_balance_bank_accounts
 
         return render(request, 'account_management_app/index.html', {
             'accounts': accounts,
@@ -129,11 +129,12 @@ def my_profile(request):
 def my_savings(request):
     try:
         user = request.user
-
+        total_balance = user.customer.total_balance_saving_accounts
         accounts = Account.objects.filter(user=user, is_saving_account=True)
 
         return render(request, 'account_management_app/my_savings.html', {
-            'accounts': accounts
+            'accounts': accounts,
+            'total_balance': total_balance
         })
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
@@ -182,20 +183,26 @@ def saving_account_transfer(request, account_number):
             amount = Decimal(request.POST['amount'])
             transfer_account_number = request.POST.get('accounts')
             transfer_account = Account.objects.get(account_number=transfer_account_number)
-            transfer_account.make_payment(amount, saving_account.account_number, is_loan=False, is_saving_account=True)
-            transactions = saving_account.get_transactions
-            return render(request, 'account_management_app/saving_account_detail.html', {
-                'account': saving_account,
-                'transactions': transactions,
-                'customer': customer,
-            })
-        else:
-            return render(request, 'account_management_app/saving_account_detail.html', {
-                'account': saving_account,
-                'transactions': transactions,
-                'customer': customer,
+            all_accounts = Account.objects.filter(user=request.user, is_saving_account=False)
 
-            })
+            try:
+                transfer_account.make_payment(amount, saving_account.account_number, is_loan=False, is_saving_account=True)
+                message = 'Amount was sucessfully transfered to saving account'
+            except Exception as ex:
+                message = 'Error occured, balance is too low'
+
+            transactions = saving_account.get_transactions
+            context = {
+                'account': saving_account,
+                'transactions': transactions,
+                'customer': customer,
+                'message': message,
+                'all_accounts': all_accounts
+
+            }
+            return render(request, 'account_management_app/saving_account_detail.html', context)
+        else:
+            return render(request, 'account_management_app/saving_account_detail.html', context)
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
     

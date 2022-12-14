@@ -27,6 +27,22 @@ class Customer(models.Model):
         for item in accounts:
             total_balance += item.balance
         return total_balance
+    
+    @property
+    def total_balance_bank_accounts(self):
+        accounts = Account.objects.filter(user=self.user, is_saving_account = False)
+        total_balance = 0
+        for item in accounts:
+            total_balance += item.balance
+        return total_balance
+    
+    @property
+    def total_balance_saving_accounts(self):
+        accounts = Account.objects.filter(user=self.user, is_saving_account = True)
+        total_balance = 0
+        for item in accounts:
+            total_balance += item.balance
+        return total_balance
 
 
 class Account(models.Model):
