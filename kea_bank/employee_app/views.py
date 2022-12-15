@@ -120,9 +120,12 @@ def update_customer(request, pk):
             customer = Customer.objects.get(pk = pk)
             customer.rank = request.POST['rank']
             customer.save()
+            accounts = Account.objects.filter(user=customer.user)
+
 
             context = {
                 'customer': customer,
+                'accounts': accounts,
             }
             return render(request, 'employee_app/customer_detail.html', context)
 
