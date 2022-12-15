@@ -180,8 +180,14 @@ def saving_account_transfer(request, account_number):
         saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
         print(type(saving_account))
         if request.method == 'POST':
-            amount = Decimal(request.POST['amount'])
-            transfer_account_number = request.POST.get('accounts')
+            if request.POST.get('accounts') and request.POST.get('accounts'):
+                transfer_account_number = request.POST.get('accounts')
+                amount = Decimal(request.POST['amount'])
+            else:
+                return render(request, 'account_management_app/saving_account_detail.html', {
+                    'account': saving_account,
+                    'message': 'Please select an amount and account to transfer to'
+                })
             transfer_account = Account.objects.get(account_number=transfer_account_number)
             all_accounts = Account.objects.filter(user=request.user, is_saving_account=False)
 
