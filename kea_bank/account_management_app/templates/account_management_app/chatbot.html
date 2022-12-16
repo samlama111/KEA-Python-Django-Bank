@@ -1,0 +1,27 @@
+{% extends "account_management_app/base.html" %}
+{% block content %}
+
+<h3>Welcome to Chatbot</h3>
+
+<form action="/message/" method="post">
+    {% csrf_token %}
+
+    <input type="text" name="message" required>
+    <button type="submit">Send</button>
+</form>
+
+<div>
+    {{message}}
+</div>
+
+<div>
+    {{response}}
+</div>
+
+
+<div>
+    {{conversation}}
+</div>
+
+
+{% endblock %}

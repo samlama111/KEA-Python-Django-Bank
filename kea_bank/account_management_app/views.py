@@ -5,6 +5,7 @@ from . models import Account
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from . import chatbot
 
 from . models import Customer
 
@@ -211,4 +212,31 @@ def saving_account_transfer(request, account_number):
             return render(request, 'account_management_app/saving_account_detail.html', context)
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
-    
+
+@login_required(login_url='login_app:login')
+def chatbot_messages(request):
+    try:
+        context = {}
+        return render(request, 'account_management_app/chatbot.html', context)
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )
+
+@login_required(login_url='login_app:login')
+def chatbot_conversation(request):
+    try:
+        if (request.method == 'POST'):
+            message = request.POST['message']
+            response = chatbot.get_chatbot_response(message)
+            conversation = chatbot.get_conversation()
+
+            context = {
+            'message' : message,
+            'response':response,
+            'conversation': conversation
+            }
+            return render(request, 'account_management_app/chatbot.html', context)
+        else:
+            context = {}
+            return render(request, 'account_management_app/chatbot.html', context)
+    except Customer.DoesNotExist:
+        return render(request,'login_app/login.html', {} )

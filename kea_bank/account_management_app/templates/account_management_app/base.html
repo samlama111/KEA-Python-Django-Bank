@@ -38,6 +38,12 @@
                         <p>My savings</p>
                     </div>
                 </a>
+                <a id="nav" href="{% url 'account_management_app:chatbot_messages' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/chat.png' %}" alt="profile">
+                        <p>Chatbot</p>
+                    </div>
+                </a>
                 <a id="nav" href="{% url 'login_app:logout' %}">
                     <div class="link-wrapper">
                         <img id="icon" src="{% static 'images/logout.png' %}" alt="profile">
