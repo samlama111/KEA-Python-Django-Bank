@@ -11,9 +11,9 @@ chatbot = ChatBot('Bank')
  # Training with Personal Ques & Ans 
 conversation = [
     "Hello",
-    "Hi there!What can I help you with?",
+    "Hi there! What can I help you with?",
     "Hi",
-    "Hello, what can I help you with?"
+    "Hello, what can I help you with?",
     "I need help!",
     "What do you need help with?",
     "How do I transfer money?",

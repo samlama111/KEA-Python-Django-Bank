@@ -12,13 +12,16 @@
     </div>
 
     <div class="conversation-wrapper">
+        {% for value in conversation %}
+
         <div class="question">
-            {{message}}
+            {{value.question}}
         </div>
         <div class="response">
-            {{response}}
-
+            {{value.response}}
         </div>
+        {% endfor %}
+
     </div>
 
     <form id="chatbot_form" action="/message/" method="post">

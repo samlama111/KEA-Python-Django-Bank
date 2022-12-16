@@ -216,7 +216,11 @@ def saving_account_transfer(request, account_number):
 @login_required(login_url='login_app:login')
 def chatbot_messages(request):
     try:
-        context = {}
+        user = request.user
+        conversation = chatbot.get_conversation(user)
+        context = {
+            'conversation': conversation
+        }
         return render(request, 'account_management_app/chatbot.html', context)
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
