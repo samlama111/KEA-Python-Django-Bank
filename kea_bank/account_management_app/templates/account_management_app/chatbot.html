@@ -1,27 +1,36 @@
 {% extends "account_management_app/base.html" %}
 {% block content %}
+{% load static %}
 
 <h3>Welcome to Chatbot</h3>
 
-<form action="/message/" method="post">
-    {% csrf_token %}
+<div class="chat-wrapper">
+    <div class="chat-header">
+        <img id="icon-chatbot" src="{% static 'images/chatbot.png' %}" alt="profile">
+        <p>Chatbot</p>
+        <img id="icon" src="{% static 'images/dot.png' %}" alt="profile">
+    </div>
 
-    <input type="text" name="message" required>
-    <button type="submit">Send</button>
-</form>
+    <div class="conversation-wrapper">
+        <div class="question">
+            {{message}}
+        </div>
+        <div class="response">
+            {{response}}
 
-<div>
-    {{message}}
+        </div>
+    </div>
+
+    <form id="chatbot_form" action="/message/" method="post">
+        {% csrf_token %}
+        
+        <div class="input-wrapper">
+            <input type="text" name="message" required>
+            <button type="submit">Send</button>
+        </div>
+    </form>
 </div>
 
-<div>
-    {{response}}
-</div>
-
-
-<div>
-    {{conversation}}
-</div>
 
 
 {% endblock %}

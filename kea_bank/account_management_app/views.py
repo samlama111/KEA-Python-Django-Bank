@@ -224,10 +224,12 @@ def chatbot_messages(request):
 @login_required(login_url='login_app:login')
 def chatbot_conversation(request):
     try:
+        user = request.user
+
         if (request.method == 'POST'):
             message = request.POST['message']
             response = chatbot.get_chatbot_response(message)
-            conversation = chatbot.get_conversation()
+            conversation = chatbot.get_conversation(user)
 
             context = {
             'message' : message,

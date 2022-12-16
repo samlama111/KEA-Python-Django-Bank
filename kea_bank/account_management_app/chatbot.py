@@ -45,11 +45,11 @@ def get_chatbot_response(self):
     json_array.append(text_json)
     return response
 
-def get_conversation():
+def get_conversation(user):
     print(json_array)
     json_str = json.dumps(json_array)
     json_load = json.loads(json_str)
-    conversation = Conversation(json_array=json_str)
+    conversation = Conversation(json_array=json_str, user = user)
     conversation.save()
     return json_load
 
