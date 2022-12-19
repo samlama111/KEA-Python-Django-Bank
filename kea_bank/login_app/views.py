@@ -24,11 +24,6 @@ def login(request):
    return render(request, 'login_app/login.html', context)
 
 
-def logout(request):
-   dj_logout(request)
-   return render(request, 'login_app/login.html')
-
-
 def password_reset(request):
    pass
 
