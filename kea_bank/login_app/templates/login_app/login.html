@@ -13,10 +13,12 @@
             <input type="text" name="user" placeholder="User Name">
             <input type="password" name="password" placeholder="Password">
             <button>Login</button>
+            
       </form>
-   <hr />
-   {% if error %}
+      <hr />
+      {% if error %}
       {{ error }}
-   {% endif %}
+      {% endif %}
+      <div id="content">{% block content %} {% endblock %}</div>
 </body>
 </html>
