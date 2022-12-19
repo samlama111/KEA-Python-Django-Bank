@@ -19,18 +19,36 @@ class Command(BaseCommand):
                 'amount': int(transaction.amount),
                 'receiver_account_number': transaction.receiver_account_number, 
                 'sender_account_number': transaction.sender_account_number,
-                # Local bank's ID in external bank is hardcoded to 2
-                'reservation_bank_account': 2,
+                # Local bank's ID in external bank is hardcoded to 4
+                'reservation_bank_account': 4,
                 'token': transaction.token,
+                'status': 'in_progress',
             }
             res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
             if (res.status_code == 201):
+                print(f'Reservation created for transfer with ID: {transaction.token}')
                 # Make local reservation to external bank 
                 sender_account = Account.objects.get(account_number=transaction.sender_account_number)
+                # TODO: catch validation errors
                 sender_account.make_payment(transaction.amount, transaction.reservation_bank_account.account_number)
-                # Update transaction status to in_progress
-                transaction.status = 'in_progress'
-                transaction.save()
-                print(f'Reservation created for transfer with ID: {transaction.token}')
+
+                url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
+
+                # TODO: repeat n times
+                res = requests.put(url, data = {'status': 'to_be_confirmed' })
+
+                if res.ok:
+                    transaction.status = 'confirmed'
+                    transaction.save()
+                    print(f'Transaction completed for transfer with ID: {transaction.token}')
+                else:
+                    print(f'Transaction with ID: {transaction.token} failed', res.text)
+                    transaction.status = 'to_be_deleted'
+                    transaction.save()
+                    
+                    # send cancel request to bank
+                    requests.put(url, data = {'status': 'to_be_deleted' })
+
+                    print(f'Transaction with ID: {transaction.token} reverted')
             else:
                 print(f'Reservation failed for transfer with ID: {transaction.token}', res.text)
