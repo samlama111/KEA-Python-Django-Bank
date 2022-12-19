@@ -7,17 +7,12 @@
 
     <div class="total-balance">
         <p>YOUR TOTAL BALANCE</p>
-
         <p id="amount_balance">{{total_balance}}</p>
-
     </div>
-
-
-
 
     <div class="payment-list">
         <div class="accounts">
-            <h2>Your accounts</h2>
+            <h2>Your bank accounts</h2>
             {% for account in accounts %}
         
             <div class="account_number" id="{{account.account_number }}"
@@ -27,22 +22,11 @@
                  hx-target="this"
                  hx-swap="outerHTML">
                 <div>{{account.account_number}}
-
-
                 </div>
             </div>
             {% endfor %}
-
-
-            
-
-
         </div>
-
     </div>
-
-    
-
     {% if error %}
         {{ error }}
     {% endif %}

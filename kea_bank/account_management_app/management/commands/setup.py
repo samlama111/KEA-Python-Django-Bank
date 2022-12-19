@@ -2,6 +2,7 @@ import secrets
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from account_management_app.models import Account, Customer, Bank
+from employee_app.models import Employee
 
 class Command(BaseCommand):
     help = 'Sets up the banks accounts'
@@ -21,10 +22,11 @@ class Command(BaseCommand):
         ipo_account.make_payment(
             10_000_000,
             ops_account.account_number,
-            is_loan=True
+            is_loan=True,
+            is_saving_account=False
         )
 
-        default_user = User.objects.create_user('user', email='user@dummy.com', password='test123')
+        default_user = User.objects.create_user('user', email='t', password='test123')
         default_user.first_name = 'Default'
         default_user.last_name  = 'User'
         default_user.save()
@@ -48,4 +50,13 @@ class Command(BaseCommand):
             name='External Bank Operational Account', 
             account_type='loan'
         )
+
+        default_user_employee = User.objects.create_user('employee', email='employee@gmail.com', password='test123')
+        default_user_employee.first_name = 'Default Employee'
+        default_user_employee.last_name  = 'Employee'
+        default_user_employee.save()
+
+        default_employee=Employee(user=default_user_employee)
+        default_employee.save()
+
         

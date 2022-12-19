@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Account, Customer, Ledger, Bank, ExternalLedgerMetadata
 
+
 class LedgerAdmin(admin.ModelAdmin):
     readonly_fields = ('id', 'transaction_id', 'account', )
 

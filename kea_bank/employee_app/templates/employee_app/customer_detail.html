@@ -1,0 +1,57 @@
+{% extends "employee_app/base.html" %}
+{% block content %}
+
+<h2>Customer detail</h2>
+
+<div class="customer-info">
+    <p>Username: {{customer.user.username}}</p>
+    <p>First name: {{customer.user.first_name}}</p>
+    <p>Last name: {{customer.user.last_name}}</p>
+    <p>Email: {{customer.user.email}}</p>
+    <p>Rank: {{customer.rank}}</p>
+
+    <form action="{% url 'employee_app:update_customer' pk=customer.pk %}" method="POST">
+        {% csrf_token %}
+    <select name="rank">
+        <option {%if customer.rank == "basic"%} selected="selected" {% endif %} value="basic">Basic</option>
+        <option {%if customer.rank == "silver"%} selected="selected" {% endif %} value="silver">Silver</option>
+        <option {%if customer.rank == "gold"%} selected="selected" {% endif %} value="gold">Gold</option>
+    </select>
+    <br><br>
+    <input type="submit" value="Save changes">
+    </form>
+
+</div>
+
+<div class="accounts">
+    <h3>Accounts</h3>
+
+    <form action="{% url 'employee_app:create_account' pk=customer.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Create account"></input>
+    </form>
+
+    <div class="account-wrapper">
+        {% for account in accounts %}
+
+        <div class="account-list-wrapper">
+            <a id="account-number" href="{% url 'employee_app:account_detail' account_number=account.account_number  %}">
+                {{account.account_number}}
+            </a> 
+
+            <form action="{% url 'employee_app:delete_account' account_number=account.account_number pk=customer.pk %}" method="POST">
+                {% csrf_token %}
+                <input id="delete-button" type="submit" value="Delete">
+            </form>
+
+        </div>
+
+
+        
+
+        {% endfor %}
+    </div>
+
+
+</div>
+{% endblock %}

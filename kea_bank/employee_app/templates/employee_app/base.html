@@ -9,7 +9,7 @@
     <link rel="stylesheet"  href="{% static 'style.css' %}" type="text/css" media="all">
     <script src="https://unpkg.com/htmx.org@1.8.0" defer></script>
 
-    <title>Bank</title>
+    <title>Employee</title>
 </head>
 <body>
 
@@ -20,22 +20,22 @@
             </a>
             <nav>
 
-                <a id="nav" href="/">
-                    <div class="link-wrapper">
-                        <img id="icon" src="{% static 'images/dashboard.png' %}" alt="dashboard">
-                        <p>Dashboard</p>
-                    </div>
-                </a>
-                <a id="nav" href="{% url 'account_management_app:my_profile' %}">
+                <a id="nav" href="{% url 'employee_app:index' %}">
                     <div class="link-wrapper">
                         <img id="icon" src="{% static 'images/user.png' %}" alt="profile">
-                        <p>My profile</p>
+                        <p>View all customers</p>
                     </div>
                 </a>
-                <a id="nav" href="{% url 'account_management_app:my_savings' %}">
+                <a id="nav" href="{% url 'employee_app:create_customer' %}">
                     <div class="link-wrapper">
-                        <img id="icon" src="{% static 'images/savings.png' %}" alt="profile">
-                        <p>My savings</p>
+                        <img id="icon" src="{% static 'images/plus.png' %}" alt="profile">
+                        <p>Create customer </p>
+                    </div>
+                </a>
+                <a id="nav" href="{% url 'employee_app:my_profile' %}">
+                    <div class="link-wrapper">
+                        <img id="icon" src="{% static 'images/profile.png' %}" alt="profile">
+                        <p>My profile</p>
                     </div>
                 </a>
                 <a id="nav" href="{% url 'login_app:logout' %}">

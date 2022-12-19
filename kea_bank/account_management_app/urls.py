@@ -14,4 +14,9 @@ urlpatterns = [
     path('api/v1/transaction', Transfer.as_view()), #post
     # path('api/v1/transaction<int:pk>/', LedgerList.as_view()), #put
     # path('api/v1/transaction<int:pk>/', LedgerList.as_view()), #delete
+    path('my_savings/', views.my_savings, name="my_savings"),
+    path('create-saving-account/', views.create_saving_account, name="create_saving_account"),
+    path('saving-account-detail/<int:account_number>/', views.saving_account_detail, name="saving_account_detail"),
+    path('delete-account/<int:account_number>', views.delete_saving_account, name="delete_saving_account"),
+    path('saving_account_transfer/<int:account_number>/', views.saving_account_transfer, name="saving_account_transfer")
 ]
