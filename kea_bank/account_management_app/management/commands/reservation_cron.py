@@ -17,9 +17,10 @@ class Command(BaseCommand):
             external_bank_url = transaction.reservation_bank_account.bank.api_url
             external_bank_metadata = {
                 'amount': int(transaction.amount),
-                'receiver_account': transaction.receiver_account_number, 
+                'receiver_account_number': transaction.receiver_account_number, 
+                'sender_account_number': transaction.sender_account_number,
                 # Local bank's ID in external bank is hardcoded to 4
-                'sender_account': 4
+                'reservation_bank_account': 4
             }
             res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
             if (res.status_code == 201):
@@ -31,4 +32,4 @@ class Command(BaseCommand):
                 transaction.save()
                 print(f'Reservation created for transfer with ID: {transaction.id}')
             else:
-                print(f'Reservation failed for transfer with ID: {transaction.id}')
+                print(f'Reservation failed for transfer with ID: {transaction.id}', res.text)
