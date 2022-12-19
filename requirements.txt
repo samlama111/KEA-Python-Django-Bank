@@ -5,3 +5,5 @@ tzdata==2022.2
 django-rest-framework
 django-kronos
 requests
+django_otp
+django-two-factor-auth[phonenumbers]
