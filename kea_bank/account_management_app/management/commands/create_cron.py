@@ -31,7 +31,7 @@ class Command(BaseCommand):
                     transaction.status = 'confirmed'
                     transaction.save()
                     # Create entry in local ledger
-                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number)
+                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number, is_loan=True)
                     print(f'Transaction finished for transfer with ID: {transaction.token}')
                 else: 
                     self.abort(transaction)
