@@ -23,7 +23,6 @@ class Command(BaseCommand):
             10_000_000,
             ops_account.account_number,
             is_loan=True,
-            is_saving_account=False
         )
 
         default_user = User.objects.create_user('user', email='t', password='test123')
