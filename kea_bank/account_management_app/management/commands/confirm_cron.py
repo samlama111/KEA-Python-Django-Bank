@@ -17,9 +17,9 @@ class Command(BaseCommand):
             
             print(f'Confirming transaction with ID: {transaction.token}')
             external_bank_url = transaction.reservation_bank_account.bank.api_url
-            url = external_bank_url+f'/api/v1/transaction/{transaction.token}'
+            url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
 
-            res = requests.put(url, data = {'status': 'to_be_created' })
+            res = requests.put(url, data = {'status': 'to_be_confirmed' })
 
             print(res.status_code)
             if res.ok:
