@@ -165,6 +165,7 @@ class ExternalLedgerMetadata(models.Model):
         PENDING='pending'
         IN_PROGRESS='in_progress'
         TO_BE_CONFIRMED='to_be_confirmed'
+        TO_BE_DELETED='to_be_deleted'
         CONFIRMED='confirmed'
         CANCELLED='cancelled'
 
