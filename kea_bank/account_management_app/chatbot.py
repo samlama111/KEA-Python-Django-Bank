@@ -12,14 +12,20 @@ chatbot = ChatBot('Bank')
 conversation = [
     "Hello",
     "Hi there! What can I help you with?",
+    "Hey",
+    "Hi there! What can I help you with?",
     "Hi",
     "Hello, what can I help you with?",
     "I need help!",
     "What do you need help with?",
     "How do I transfer money?",
-    "Got to dashboard open your account ",
+    "Got to dashboard open account you want to transfer money from. Inser the amount, the account number and click on send. ",
     "How do I make a loan?",
-    "Open account click on .."
+    "Open account you want to take loan for. Enter the amount and click on Take loan",
+    "How do I return money?",
+    "Open the account you want to return money from, insert the amount and click on Pay back.",
+    "How do I add money to my transfer account?",
+    "Go to my savings, if you dont have an account create one. Once account is created insert the amount, and chose the account you want to transfer money from."
 ]
 
 trainer = ListTrainer(chatbot)
