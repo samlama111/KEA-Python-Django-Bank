@@ -141,3 +141,8 @@ Scripts/pip3.9.exe
 Scripts/python.exe
 Scripts/pythonw.exe
 Scripts/sqlformat.exe
+Scripts/nltk.exe
+Scripts/pint-convert
+Scripts/tqdm.exe
+Scripts/pip3.10.exe
+Scripts/wheel.exe
