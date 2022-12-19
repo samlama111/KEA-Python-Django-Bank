@@ -20,7 +20,8 @@ class Command(BaseCommand):
                 'receiver_account_number': transaction.receiver_account_number, 
                 'sender_account_number': transaction.sender_account_number,
                 # Local bank's ID in external bank is hardcoded to 2
-                'reservation_bank_account': 2
+                'reservation_bank_account': 2,
+                'token': transaction.token,
             }
             res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
             if (res.status_code == 201):
