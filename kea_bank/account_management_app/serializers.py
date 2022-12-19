@@ -4,5 +4,5 @@ from .models import ExternalLedgerMetadata
 
 class MetadataSerializer(serializers.ModelSerializer):
    class Meta:
-      fields = ('sender_account', 'receiver_account', 'amount')
+      fields = ('reservation_bank_account', 'sender_account_number', 'receiver_account_number', 'amount')
       model = ExternalLedgerMetadata

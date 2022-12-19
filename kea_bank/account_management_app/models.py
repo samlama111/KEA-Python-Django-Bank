@@ -155,12 +155,17 @@ class Ledger(models.Model):
  
 class ExternalLedgerMetadata(models.Model):
     token = models.UUIDField(default = uuid.uuid4, editable=False)
-    sender_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='sender')
-    receiver_account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name='receiver')
+    reservation_bank_account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    sender_account_number = models.IntegerField()
+    receiver_account_number = models.IntegerField()
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
+    # tried, failed
+    
     class StatusType(models.TextChoices):
         PENDING='pending'
+        IN_PROGRESS='in_progress'
+        # TO_BE_CONFIRMED='to_be_confirmed'
         CONFIRMED='confirmed'
         CANCELLED='cancelled'
 

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from account_management_app.models import ExternalLedgerMetadata, Bank
+from account_management_app.models import ExternalLedgerMetadata, Account
 
 import kronos
 import requests
@@ -14,11 +14,21 @@ class Command(BaseCommand):
         for transaction in pending_transactions:
             # TODO: add check how old the transaction is
             print(f'Creating reservation for transfer with ID: {transaction.id}')
-            external_bank_url = transaction.receiver_account.bank.api_url
-            # External bank's operation account is 1, sender's account is hardcoded to 4
-            myobj = {'amount': int(transaction.amount), 'receiver_account': 1, 'sender_account': 4}
-            res = requests.post(external_bank_url+'/api/v1/transaction', data = myobj)
-            if (res.status_code == 201):  
+            external_bank_url = transaction.reservation_bank_account.bank.api_url
+            external_bank_metadata = {
+                'amount': int(transaction.amount),
+                'receiver_account': transaction.receiver_account_number, 
+                # Local bank's ID in external bank is hardcoded to 4
+                'sender_account': 4
+            }
+            res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
+            if (res.status_code == 201):
+                # Make local reservation to external bank 
+                sender_account = Account.objects.get(account_number=transaction.sender_account_number)
+                sender_account.make_payment(transaction.amount, transaction.reservation_bank_account.account_number)
+                # Update transaction status to in_progress
+                transaction.status = 'in_progress'
+                transaction.save()
                 print(f'Reservation created for transfer with ID: {transaction.id}')
             else:
                 print(f'Reservation failed for transfer with ID: {transaction.id}')
