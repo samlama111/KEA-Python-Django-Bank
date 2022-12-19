@@ -40,9 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'login_app',
     'account_management_app',
     'employee_app',
+    
+    # 3rd party
+    'rest_framework',
+    'rest_framework.authtoken',
+    'kronos',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
