@@ -160,12 +160,11 @@ class ExternalLedgerMetadata(models.Model):
     receiver_account_number = models.IntegerField()
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
-    # tried, failed
     
     class StatusType(models.TextChoices):
         PENDING='pending'
         IN_PROGRESS='in_progress'
-        # TO_BE_CONFIRMED='to_be_confirmed'
+        TO_BE_CONFIRMED='to_be_confirmed'
         CONFIRMED='confirmed'
         CANCELLED='cancelled'
 

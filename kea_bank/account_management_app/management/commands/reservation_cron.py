@@ -13,14 +13,14 @@ class Command(BaseCommand):
         # Make POST request to bank API to create a reservation
         for transaction in pending_transactions:
             # TODO: add check how old the transaction is
-            print(f'Creating reservation for transfer with ID: {transaction.id}')
+            print(f'Creating reservation for transfer with ID: {transaction.token}')
             external_bank_url = transaction.reservation_bank_account.bank.api_url
             external_bank_metadata = {
                 'amount': int(transaction.amount),
                 'receiver_account_number': transaction.receiver_account_number, 
                 'sender_account_number': transaction.sender_account_number,
-                # Local bank's ID in external bank is hardcoded to 4
-                'reservation_bank_account': 4
+                # Local bank's ID in external bank is hardcoded to 2
+                'reservation_bank_account': 2
             }
             res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
             if (res.status_code == 201):
@@ -30,6 +30,6 @@ class Command(BaseCommand):
                 # Update transaction status to in_progress
                 transaction.status = 'in_progress'
                 transaction.save()
-                print(f'Reservation created for transfer with ID: {transaction.id}')
+                print(f'Reservation created for transfer with ID: {transaction.token}')
             else:
-                print(f'Reservation failed for transfer with ID: {transaction.id}', res.text)
+                print(f'Reservation failed for transfer with ID: {transaction.token}', res.text)
