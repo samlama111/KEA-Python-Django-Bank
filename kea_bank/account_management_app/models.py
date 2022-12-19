@@ -154,7 +154,7 @@ class Ledger(models.Model):
         unique_together = ['transaction_id', 'account']
  
 class ExternalLedgerMetadata(models.Model):
-    token = models.UUIDField(default = uuid.uuid4, editable=False)
+    token = models.UUIDField(default = uuid.uuid4)
     reservation_bank_account = models.ForeignKey(Account, on_delete=models.PROTECT)
     sender_account_number = models.IntegerField()
     receiver_account_number = models.IntegerField()
