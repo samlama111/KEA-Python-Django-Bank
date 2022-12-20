@@ -28,6 +28,8 @@ Final project of a banking system done in Django
         ```
         - Open the file <Python-folder>\Lib\site-packages\yaml\constructor.py, go to line 126:
             - change `collections.Hashable` to `collections.abc.Hashable` (`if not isinstance(key, collections.abc.Hashable):`)
+- download nltk data for the chatbot by running the nltk_download.py file and downloading all packages through the GUI presented.
+Run `python nltk_download.py` and use the GUI to download all packages.
 - set-up database & migrate using `python manage.py migrate`
 - (optional) create super user using `python manage.py createsuperuser`
 - populate the database using `python manage.py setup`
