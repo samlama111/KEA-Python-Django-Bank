@@ -4,6 +4,21 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
 
+class Bank(models.Model):
+    bank_id = models.IntegerField(editable=False, primary_key=True)
+    name = models.CharField(max_length=50)
+    api_url = models.CharField(max_length=50)
+    
+    class BankType(models.TextChoices):
+        LOCAL='local'
+        EXTERNAL='external'
+
+    bank_type = models.CharField(
+        max_length=10,
+        choices=BankType.choices,
+        default=BankType.EXTERNAL
+    )
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # reached using user.customer https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#extending-the-existing-user-model
@@ -20,9 +35,18 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
+    def get_accounts(self):
+        return Account.objects.filter(user=self.user)
+    
+    def get_external_banks(self):    
+        return Bank.objects.filter(bank_type='external')
+
+    def get_bank_operational_account(self):
+        return Account.objects.get(account_type='operational')
+    
     @property
     def total_balance(self):
-        accounts = Account.objects.filter(user=self.user)
+        accounts = self.get_accounts()
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -47,20 +71,20 @@ class Customer(models.Model):
 
 class Account(models.Model):
     account_number = models.AutoField(primary_key=True)
-    is_customer = models.BooleanField(default=True)
+    bank = models.ForeignKey(Bank, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     is_saving_account=models.BooleanField(default=False)
     
     class AccountType(models.TextChoices):
-        PRIVATE='private'
-        BUSINESS='business'
+        CUSTOMER='customer'
         LOAN='loan'
+        OPERATIONAL='operational'
 
     account_type = models.CharField(
-        max_length=10,
+        max_length=15,
         choices=AccountType.choices,
-        default=AccountType.PRIVATE
+        default=AccountType.CUSTOMER
     )
 
     def get_transactions(self):
@@ -100,14 +124,11 @@ class Account(models.Model):
         return my_transactions_with_balance['balance']
     
 
-    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=True):
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
         if amount < 0:
             raise ValidationError('Please use a positive amount')
 
         if is_loan==False and self.balance < int(amount):
-            raise ValidationError('Balance is too low')
-        
-        if is_saving_account==True and self.balance < int(amount):
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
@@ -136,3 +157,25 @@ class Conversation(models.Model):
     conversation_id = models.AutoField(primary_key=True)
     json_array = models.JSONField(default=dict, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+ 
+class ExternalLedgerMetadata(models.Model):
+    token = models.UUIDField(default = uuid.uuid4)
+    reservation_bank_account = models.ForeignKey(Account, on_delete=models.PROTECT)
+    sender_account_number = models.IntegerField()
+    receiver_account_number = models.IntegerField()
+    amount = models.DecimalField(max_digits=15, decimal_places=4)
+    created_timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class StatusType(models.TextChoices):
+        PENDING='pending'
+        IN_PROGRESS='in_progress'
+        TO_BE_CONFIRMED='to_be_confirmed'
+        TO_BE_DELETED='to_be_deleted'
+        CONFIRMED='confirmed'
+        CANCELLED='cancelled'
+
+    status = models.CharField(
+        max_length=15,
+        choices=StatusType.choices,
+        default=StatusType.PENDING
+    )

@@ -37,7 +37,7 @@ def make_loan(request, account_number, pay_back=False):
                 print('Cant apply for loan. Please upgrade your user rank.')
             amount = Decimal(request.POST['amount'])
             # gets banks operational account
-            our_account = Account.objects.filter(is_customer=False)[0]
+            our_account = customer.get_bank_operational_account()
             if pay_back:
                 if amount_owed >= amount:
                     my_account.make_payment(amount, our_account.account_number, is_loan=True)
@@ -84,7 +84,7 @@ def transfer(request, account_number):
     try:
         customer = request.user.customer
         my_account = Account.objects.get(account_number=account_number)
-        accounts = Account.objects.filter(user=request.user)
+        accounts = customer.get_accounts()
     
         try:
             my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
@@ -181,8 +181,8 @@ def saving_account_transfer(request, account_number):
         saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
         print(type(saving_account))
         if request.method == 'POST':
-            if request.POST.get('accounts') and request.POST.get('accounts'):
-                transfer_account_number = request.POST.get('accounts')
+            transfer_account_number = request.POST.get('accounts')
+            if transfer_account_number:
                 amount = Decimal(request.POST['amount'])
             else:
                 return render(request, 'account_management_app/saving_account_detail.html', {
