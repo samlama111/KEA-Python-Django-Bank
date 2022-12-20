@@ -2,6 +2,8 @@ asgiref==3.5.2
 Django==4.1.1
 sqlparse==0.4.3
 tzdata==2022.2
+chatterbot==1.0.2
+pytz
 django-rest-framework
 django-kronos
 requests

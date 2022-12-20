@@ -152,6 +152,11 @@ class Ledger(models.Model):
 
     class Meta:
         unique_together = ['transaction_id', 'account']
+
+class Conversation(models.Model):
+    conversation_id = models.AutoField(primary_key=True)
+    json_array = models.JSONField(default=dict, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
  
 class ExternalLedgerMetadata(models.Model):
     token = models.UUIDField(default = uuid.uuid4)
