@@ -123,9 +123,7 @@ def my_savings(request):
 @login_required(login_url='/accounts/login/')
 @user_passes_test(customer_check, login_url='login_app:login')
 def create_saving_account(request):
-    user = request.user
-    saving_account = Account(user=user, is_saving_account=True)
-    saving_account.save()
+    Account.create(user=request.user, is_saving_account=True)
     return HttpResponseRedirect(reverse('account_management_app:my_savings'))
 
 @login_required(login_url='/accounts/login/')
@@ -171,7 +169,7 @@ def saving_account_transfer(request, account_number):
         except Exception as ex:
             message = 'Error occurred, balance is too low'
 
-        transactions = saving_account.get_transactions
+        transactions = saving_account.get_transactions()
         context = {
             'account': saving_account,
             'transactions': transactions,

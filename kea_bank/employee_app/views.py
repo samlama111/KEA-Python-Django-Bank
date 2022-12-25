@@ -1,20 +1,11 @@
 from django.shortcuts import render
-from django.http import Http404
-from django.views.generic import CreateView,ListView, DetailView, UpdateView
+from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from django.contrib.auth.models import User
+from account_management_app.models import Customer, Account
 
-
-from account_management_app.models import Customer
-from account_management_app.models import Account
-from django.shortcuts import redirect
-
-
-from . models import Employee
 
 @login_required(login_url='login_app:login')
 def index(request):
@@ -140,8 +131,7 @@ def create_account(request, pk):
     if hasattr(request.user,'employee'):
         if request.method == "POST":
             customer = Customer.objects.get(pk = pk)
-            account = Account(user=customer.user)
-            account.save()
+            Account.create(user=customer.user)
             context = {
                 'customer': customer,
                 'success': 'Account created'

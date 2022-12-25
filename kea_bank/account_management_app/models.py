@@ -87,6 +87,11 @@ class Account(models.Model):
         default=AccountType.CUSTOMER
     )
 
+    def create(user, name=None, is_saving_account=False):
+        local_bank = Bank.objects.get(bank_type='local')
+        new_account = Account(user=user, bank=local_bank, is_saving_account=is_saving_account)
+        new_account.save()
+    
     def get_transactions(self):
         my_transactions = Ledger.objects.filter(account=self)
         return my_transactions
