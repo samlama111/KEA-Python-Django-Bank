@@ -88,10 +88,12 @@ def transfer(request, account_number):
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
     transactions = account.get_transactions()
+    external_banks = request.user.customer.get_external_banks()
 
     return render(request, 'account_management_app/account_details.html', {
         'account': account,
-        'transactions': transactions
+        'transactions': transactions,
+        'external_banks': external_banks
     })
 
 
@@ -203,3 +205,7 @@ def chatbot_conversation(request):
         'conversation': conversation
         }
     return render(request, 'account_management_app/chatbot.html', context)
+
+
+# TODO: add a view function making a POST request to 'api/v1/transaction'
+# with body from template form and sender account number & uuid token

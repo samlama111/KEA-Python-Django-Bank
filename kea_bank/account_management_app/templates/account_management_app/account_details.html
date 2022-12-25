@@ -28,6 +28,24 @@
                         </form>
                     </div>
                     <hr>
+                    <h3>Inter-bank transfer</h3>
+                    <div class="sending-money">
+                        <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
+                            {% csrf_token %}
+                            <select name="bank_id">
+                                {% for bank in external_banks %}
+                                  <option value="{{ bank.bank_id }}">{{ bank.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input name="amount" type="number" placeholder="Amount">
+                            <input name="account_number" type="text" placeholder="Account number">
+                            <input name="note" type="text" placeholder="Note">
+                            <button>
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                    <hr>
     
                     <h3>All transactions</h3>
                     <table>
