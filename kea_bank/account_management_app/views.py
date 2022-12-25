@@ -1,12 +1,16 @@
 from decimal import Decimal
 from django.shortcuts import render
-from . models import Account, Customer
-from django.contrib.auth.decorators import login_required
+from . models import Account
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from . import chatbot
 
+def customer_check(user):
+    return hasattr(user, "customer")
+
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def index(request):
     user = request.user
     accounts = Account.objects.filter(user=user, is_saving_account=False)
@@ -56,14 +60,17 @@ def make_loan(request, account_number, pay_back=False):
     
 
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def loan(request, account_number):
     return make_loan(request, account_number=account_number)
 
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def pay_back_loan(request, account_number):
     return make_loan(request, account_number=account_number, pay_back=True)
 
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
@@ -83,7 +90,7 @@ def transfer(request, account_number):
 @login_required(login_url='login_app:login')
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
-    transactions = account.get_transactions
+    transactions = account.get_transactions()
 
     return render(request, 'account_management_app/account_details.html', {
         'account': account,
@@ -92,6 +99,7 @@ def account_details(request, account_number):
 
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def my_profile(request):
     user = request.user
     return render(request, 'account_management_app/my_profile.html', {
@@ -101,6 +109,7 @@ def my_profile(request):
 
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def my_savings(request):
     user = request.user
     total_balance = user.customer.total_balance_saving_accounts
@@ -112,6 +121,7 @@ def my_savings(request):
     })
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def create_saving_account(request):
     user = request.user
     saving_account = Account(user=user, is_saving_account=True)
@@ -119,6 +129,7 @@ def create_saving_account(request):
     return HttpResponseRedirect(reverse('account_management_app:my_savings'))
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def saving_account_detail(request, account_number):
     account = Account.objects.get(account_number = account_number, is_saving_account=True)
     all_accounts = Account.objects.filter(user=request.user, is_saving_account=False)
@@ -129,6 +140,7 @@ def saving_account_detail(request, account_number):
     })
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def delete_saving_account(request, account_number):
     if request.method == "POST":
         account = Account.objects.get(account_number = account_number)
@@ -136,6 +148,7 @@ def delete_saving_account(request, account_number):
         return HttpResponseRedirect(reverse('account_management_app:my_savings'))
 
 @login_required(login_url='/accounts/login/')
+@user_passes_test(customer_check, login_url='login_app:login')
 def saving_account_transfer(request, account_number):
     customer = request.user.customer
     saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
@@ -173,6 +186,7 @@ def saving_account_transfer(request, account_number):
         return render(request, 'account_management_app/saving_account_detail.html', context)
 
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def chatbot_messages(request):
     user = request.user
     conversation = chatbot.get_conversation(user)
@@ -182,6 +196,7 @@ def chatbot_messages(request):
     return render(request, 'account_management_app/chatbot.html', context)
 
 @login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def chatbot_conversation(request):
     user = request.user
 
