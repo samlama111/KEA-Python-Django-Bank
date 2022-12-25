@@ -36,14 +36,11 @@ def make_loan(request, account_number, pay_back=False):
         # gets banks operational account
         our_account = customer.get_bank_operational_account()
         if pay_back:
-            if amount_owed >= amount:
-                my_account.make_payment(amount, our_account.account_number, is_loan=True)
-            else:
-                # TODO: display error message
-                print('Cant return more than what you owe')
+            my_account.pay_back_loan(amount_owed, amount, our_account.account_number)
         else:
             our_account.make_payment(amount, account_number, is_loan=True)
-        transactions = my_account.get_transactions
+        # gets transactions after making payment
+        transactions = my_account.get_transactions()
         return render(request, 'account_management_app/account_details.html', {
             'account': my_account,
             'transactions': transactions,

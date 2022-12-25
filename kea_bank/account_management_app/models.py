@@ -128,6 +128,12 @@ class Account(models.Model):
         my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
         return my_transactions_with_balance['balance']
     
+    def pay_back_loan(self, amount_owed, amount, account_number):
+        if amount_owed >= amount:
+                self.make_payment(amount, account_number, is_loan=True)
+        else:
+            # TODO: display error message
+            print('Cant return more than what you owe')
 
     def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
         if amount < 0:
