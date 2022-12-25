@@ -152,7 +152,7 @@ def delete_saving_account(request, account_number):
 def saving_account_transfer(request, account_number):
     customer = request.user.customer
     saving_account= Account.objects.get(account_number=account_number, is_saving_account=True)
-    print(type(saving_account))
+    context={}
     if request.method == 'POST':
         transfer_account_number = request.POST.get('accounts')
         if transfer_account_number:
@@ -167,9 +167,9 @@ def saving_account_transfer(request, account_number):
 
         try:
             transfer_account.make_payment(amount, saving_account.account_number, is_loan=False, is_saving_account=True)
-            message = 'Amount was sucessfully transfered to saving account'
+            message = 'Amount was successfully transferred to saving account'
         except Exception as ex:
-            message = 'Error occured, balance is too low'
+            message = 'Error occurred, balance is too low'
 
         transactions = saving_account.get_transactions
         context = {
@@ -178,12 +178,8 @@ def saving_account_transfer(request, account_number):
             'customer': customer,
             'message': message,
             'all_accounts': all_accounts
-
         }
-        return render(request, 'account_management_app/saving_account_detail.html', context)
-    # TODO: simplify to a single render
-    else:
-        return render(request, 'account_management_app/saving_account_detail.html', context)
+    return render(request, 'account_management_app/saving_account_detail.html', context)
 
 @login_required(login_url='login_app:login')
 @user_passes_test(customer_check, login_url='login_app:login')
@@ -200,6 +196,7 @@ def chatbot_messages(request):
 def chatbot_conversation(request):
     user = request.user
 
+    context={}
     if (request.method == 'POST'):
         message = request.POST['message']
         response = chatbot.get_chatbot_response(message)
@@ -210,8 +207,4 @@ def chatbot_conversation(request):
         'response':response,
         'conversation': conversation
         }
-        return render(request, 'account_management_app/chatbot.html', context)
-    # TODO: simplify to a single render
-    else:
-        context = {}
-        return render(request, 'account_management_app/chatbot.html', context)
+    return render(request, 'account_management_app/chatbot.html', context)
