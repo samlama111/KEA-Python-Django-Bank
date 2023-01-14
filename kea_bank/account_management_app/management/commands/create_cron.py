@@ -6,7 +6,7 @@ import kronos
 
 @kronos.register('* * * * *')
 class Command(BaseCommand):
-    def abort(transaction):
+    def abort(self, transaction):
         print(f'Receiver does not exist, cancelling transaction with ID: {transaction.token}')
         # Abort locally
         transaction.status = 'cancelled'
@@ -26,7 +26,6 @@ class Command(BaseCommand):
             try:
                 receiver_account = Account.objects.get(account_number=transaction.receiver_account_number)
                 if receiver_account:
-                    print('reached')
                     # Update status to confirmed
                     transaction.status = 'confirmed'
                     transaction.save()
