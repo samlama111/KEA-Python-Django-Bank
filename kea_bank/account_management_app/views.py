@@ -13,7 +13,7 @@ def customer_check(user):
 @user_passes_test(customer_check, login_url='login_app:login')
 def index(request):
     user = request.user
-    accounts = Account.objects.filter(user=user, is_saving_account=False)
+    accounts = user.customer.get_ordinary_accounts()
     total_balance = user.customer.total_balance_bank_accounts
 
     return render(request, 'account_management_app/index.html', {
@@ -71,7 +71,7 @@ def pay_back_loan(request, account_number):
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
-    accounts = customer.get_accounts()
+    accounts = customer.get_ordinary_accounts()
 
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])

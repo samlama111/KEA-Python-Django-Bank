@@ -35,8 +35,8 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
-    def get_accounts(self):
-        return Account.objects.filter(user=self.user)
+    def get_ordinary_accounts(self):
+        return Account.objects.filter(user=self.user, is_saving_account=False)
     
     def get_external_banks(self):    
         return Bank.objects.filter(bank_type='external')
@@ -46,7 +46,7 @@ class Customer(models.Model):
     
     @property
     def total_balance(self):
-        accounts = self.get_accounts()
+        accounts = Account.objects.filter(user=self.user)
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -54,7 +54,7 @@ class Customer(models.Model):
     
     @property
     def total_balance_bank_accounts(self):
-        accounts = Account.objects.filter(user=self.user, is_saving_account = False)
+        accounts = self.get_ordinary_accounts()
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
