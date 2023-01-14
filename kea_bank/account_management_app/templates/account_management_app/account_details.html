@@ -30,7 +30,7 @@
                     <hr>
                     <h3>Inter-bank transfer</h3>
                     <div class="sending-money">
-                        <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
+                        <form action="{% url 'account_management_app:external_transfer' account.account_number %}" method="POST">
                             {% csrf_token %}
                             <select name="bank_id">
                                 {% for bank in external_banks %}

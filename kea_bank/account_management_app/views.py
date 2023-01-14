@@ -1,6 +1,7 @@
 from decimal import Decimal
+import uuid
 from django.shortcuts import render
-from . models import Account
+from . models import Account, ExternalLedgerMetadata
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -206,6 +207,22 @@ def chatbot_conversation(request):
         }
     return render(request, 'account_management_app/chatbot.html', context)
 
+def external_transfer(request, account_number):
+    customer = request.user.customer
+    accounts = customer.get_ordinary_accounts()
+    
+    context = {
+        'accounts': accounts,
+        'total_balance': customer.total_balance_bank_accounts
+    }
+    
+    if request.method == 'POST':
+        external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
+        # TODO: add amount check, perhaps abstract it totally
+        ExternalLedgerMetadata.objects.create(
+            status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
+            amount=request.POST['amount'], sender_account_number=account_number,
+            receiver_account_number=request.POST['account_number']
+        )
 
-# TODO: add a view function making a POST request to 'api/v1/transaction'
-# with body from template form and sender account number & uuid token
+    return render(request, 'account_management_app/index.html', context)
