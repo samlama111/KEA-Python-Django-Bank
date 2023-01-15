@@ -1,3 +1,4 @@
+from decimal import Decimal
 import secrets
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
@@ -20,7 +21,7 @@ class Command(BaseCommand):
         ops_account = Account.objects.create(user=bank_user, bank=bank, name='Bank Operational Account', account_type='operational')
         ipo_account = Account.objects.create(user=bank_user, bank=bank, name='Bank Investment Account', account_type='loan')
         ipo_account.make_payment(
-            10_000_000,
+            Decimal(10_000_000),
             ops_account.account_number,
             is_loan=True,
         )
