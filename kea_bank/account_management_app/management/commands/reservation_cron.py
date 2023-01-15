@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     print(f'Transaction completed for transfer with ID: {transaction.token}')
                 else:
                     print(f'Transaction with ID: {transaction.token} failed', res.text)
-                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number)
+                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
                     
                     transaction.status = 'to_be_deleted'
                     transaction.save()
