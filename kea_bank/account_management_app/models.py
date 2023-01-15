@@ -139,15 +139,15 @@ class Account(models.Model):
         if amount < 0:
             raise ValidationError('Please use a positive amount')
 
-        if is_loan==False and self.balance < int(amount):
+        if is_loan==False and self.balance < amount:
             raise ValidationError('Balance is too low')
 
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
             transaction_id = uuid.uuid4()
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=amount, transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=self, is_creditor=False, amount=-amount, transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
     
 
 class Ledger(models.Model):

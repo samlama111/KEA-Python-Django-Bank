@@ -34,6 +34,7 @@ def make_loan(request, account_number, pay_back=False):
         if customer.rank == "basic":
             print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
+        external_banks = request.user.customer.get_external_banks()
         # gets banks operational account
         our_account = customer.get_bank_operational_account()
         if pay_back:
@@ -46,7 +47,8 @@ def make_loan(request, account_number, pay_back=False):
             'account': my_account,
             'transactions': transactions,
             'amount_owed': amount_owed,
-            'loan_transactions': loan_transactions
+            'loan_transactions': loan_transactions,
+            'external_banks': external_banks
         })
     else:
         return render(request, 'account_management_app/loan.html', {
@@ -82,7 +84,7 @@ def transfer(request, account_number):
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
         context['total_balance'] = customer.total_balance
     except Exception as e:
-        context['error'] = f'there was an error: {e}'
+        context['error'] = f'There was an error: {e}'
 
     return render(request, 'account_management_app/index.html', context)
 
