@@ -2,14 +2,16 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 from chatterbot.trainers import ChatterBotCorpusTrainer
 import json
-from . models import Conversation
+from . models import Customer
 
 
-# Creating ChatBot Instance
 chatbot = ChatBot('Bank')
 
- # Training with Personal Ques & Ans 
-conversation = [
+def chatterbot_setup():
+    # Creating ChatBot Instance
+
+    # Training with Personal Ques & Ans 
+    conversation = [
     "Hello",
     "Hi there! What can I help you with?",
     "Hey",
@@ -27,21 +29,14 @@ conversation = [
     "How do I add money to my transfer account?",
     "Go to my savings, if you dont have an account create one. Once account is created insert the amount, and chose the account you want to transfer money from."
 ]
+    
+    trainer = ListTrainer(chatbot)
+    trainer.train(conversation)
 
-trainer = ListTrainer(chatbot)
-trainer.train(conversation)
 
-# Training with English Corpus Data 
-trainer_corpus = ChatterBotCorpusTrainer(chatbot)
-trainer_corpus.train(
-    'chatterbot.corpus.english',
-    'chatterbot.corpus.english.conversations'
-
-) 
-
-json_array = []
 
 def get_chatbot_response(self):
+    json_array = []
     response = chatbot.get_response(self)
     print(response)
     text_json = {
@@ -49,15 +44,44 @@ def get_chatbot_response(self):
         'response': str(response)
     }
     json_array.append(text_json)
-    return response
+    return json_array
 
-def get_conversation(user):
-    print(json_array)
-    json_str = json.dumps(json_array)
+
+def save_conversation(user, self):
+    conv_array = []
+    chatbot_conv = get_chatbot_response(self)
+    json_str = json.dumps(chatbot_conv)
     json_load = json.loads(json_str)
-    conversation = Conversation(json_array=json_str, user = user)
-    conversation.save()
-    return json_load
+    print("dhjsdhd")
+    print(json_load)
+    existing_conv = Customer.objects.filter(user = user)
+    if existing_conv.exists():
+        existing_conv_obj = Customer.objects.get(user = user)
+        conv = existing_conv_obj.json_array
+        print("***")
+        print(conv)
+        if not existing_conv_obj:
+            conv_array.append(json_load)
+        else:
+            conv_array.append(conv)
+            conv_array.append(json_load)
+        existing_conv_obj.json_array = conv_array
+        existing_conv_obj.save()
+    return conv_array
+
+def get_all_conv(user):
+    existing_conv_obj = Customer.objects.get(user = user)
+    whole_conversation = existing_conv_obj.json_array
+    return whole_conversation
+
+
+
+
+
+
+
+
+    
 
 
 

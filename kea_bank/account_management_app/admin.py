@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Customer, Ledger, Bank, Conversation, ExternalLedgerMetadata
+from .models import Account, Customer, Ledger, Bank, ExternalLedgerMetadata
 
 
 class LedgerAdmin(admin.ModelAdmin):
@@ -12,6 +12,5 @@ class ExternalLedgerAdmin(admin.ModelAdmin):
 admin.site.register(Account)
 admin.site.register(Customer)
 admin.site.register(Ledger, LedgerAdmin)
-admin.site.register(Conversation)
 admin.site.register(Bank)
 admin.site.register(ExternalLedgerMetadata, ExternalLedgerAdmin)

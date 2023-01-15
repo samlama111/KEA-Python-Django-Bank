@@ -23,7 +23,8 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # reached using user.customer https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#extending-the-existing-user-model
     phone_number = models.CharField(max_length=10)
-
+    json_array = models.JSONField(default=dict, blank=True)
+   
     class CustomerRank(models.TextChoices):
         BASIC='basic'
         SILVER='silver'
@@ -153,11 +154,7 @@ class Ledger(models.Model):
     class Meta:
         unique_together = ['transaction_id', 'account']
 
-class Conversation(models.Model):
-    conversation_id = models.AutoField(primary_key=True)
-    json_array = models.JSONField(default=dict, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
- 
+
 class ExternalLedgerMetadata(models.Model):
     token = models.UUIDField(default = uuid.uuid4)
     reservation_bank_account = models.ForeignKey(Account, on_delete=models.PROTECT)

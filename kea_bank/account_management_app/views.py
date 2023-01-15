@@ -213,11 +213,14 @@ def saving_account_transfer(request, account_number):
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
 
+
 @login_required(login_url='login_app:login')
-def chatbot_messages(request):
+def chatbot_conv(request):
+    
     try:
         user = request.user
-        conversation = chatbot.get_conversation(user)
+
+        conversation = chatbot.get_all_conv(user)
         context = {
             'conversation': conversation
         }
@@ -225,24 +228,18 @@ def chatbot_messages(request):
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
 
+
 @login_required(login_url='login_app:login')
-def chatbot_conversation(request):
+def chatbot_messages(request):
+    
     try:
         user = request.user
 
         if (request.method == 'POST'):
             message = request.POST['message']
-            response = chatbot.get_chatbot_response(message)
-            conversation = chatbot.get_conversation(user)
-
-            context = {
-            'message' : message,
-            'response':response,
-            'conversation': conversation
-            }
-            return render(request, 'account_management_app/chatbot.html', context)
+            chatbot.save_conversation(user, message)
+            return HttpResponseRedirect(reverse('account_management_app:chatbot_conv'))
         else:
-            context = {}
-            return render(request, 'account_management_app/chatbot.html', context)
+            return HttpResponseRedirect(reverse('account_management_app:chatbot_conv'))
     except Customer.DoesNotExist:
         return render(request,'login_app/login.html', {} )
