@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 from django.db import models, transaction
 from django.contrib.auth.models import User
@@ -135,12 +136,16 @@ class Account(models.Model):
             # TODO: display error message
             print('Cant return more than what you owe')
 
-    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+    def validate_payment(self, amount, balance, is_loan=False):
+        if not isinstance(amount, Decimal):
+            raise ValidationError('Amount must be of type Decimal')
         if amount < 0:
             raise ValidationError('Please use a positive amount')
-
-        if is_loan==False and self.balance < amount:
+        if is_loan==False and balance < amount:
             raise ValidationError('Balance is too low')
+    
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+        self.validate_payment(amount, self.balance, is_loan=is_loan)
 
         target_account = Account.objects.get(account_number=account_number)
 

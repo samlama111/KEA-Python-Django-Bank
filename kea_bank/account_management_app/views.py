@@ -220,12 +220,16 @@ def external_transfer(request, account_number):
     }
     
     if request.method == 'POST':
-        external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
-        # TODO: add amount check, perhaps abstract it totally
-        ExternalLedgerMetadata.objects.create(
-            status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
-            amount=request.POST['amount'], sender_account_number=account_number,
-            receiver_account_number=request.POST['account_number']
-        )
+        try:
+            external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
+            amount = Decimal(request.POST['amount'])
+            external_bank_account.validate_payment(amount=amount, balance=customer.total_balance_bank_accounts)
+            ExternalLedgerMetadata.objects.create(
+                status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
+                amount=amount, sender_account_number=account_number,
+                receiver_account_number=request.POST['account_number']
+            )
+        except Exception as e:
+            context['error'] = f'There was an error: {e}'   
 
     return render(request, 'account_management_app/index.html', context)
