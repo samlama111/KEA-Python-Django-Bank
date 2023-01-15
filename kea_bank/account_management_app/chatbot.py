@@ -52,22 +52,20 @@ def save_conversation(user, self):
     chatbot_conv = get_chatbot_response(self)
     json_str = json.dumps(chatbot_conv)
     json_load = json.loads(json_str)
-    print("dhjsdhd")
-    print(json_load)
+
     existing_conv = Customer.objects.filter(user = user)
     if existing_conv.exists():
         existing_conv_obj = Customer.objects.get(user = user)
         conv = existing_conv_obj.json_array
-        print("***")
-        print(conv)
-        if not existing_conv_obj:
+
+        if conv == {}:
             conv_array.append(json_load)
+            existing_conv_obj.json_array = conv_array
         else:
-            conv_array.append(conv)
-            conv_array.append(json_load)
-        existing_conv_obj.json_array = conv_array
+            conv.append(json_load)
+        
         existing_conv_obj.save()
-    return conv_array
+    return conv
 
 def get_all_conv(user):
     existing_conv_obj = Customer.objects.get(user = user)
