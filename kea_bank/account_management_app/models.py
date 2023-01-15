@@ -123,7 +123,7 @@ class Account(models.Model):
     def pay_back_loan(self, amount, amount_owed):
         if amount_owed >= amount:
                 our_account = self.user.customer.get_bank_operational_account()
-                self.make_payment(amount, our_account.account_number, is_loan=True)
+                self.make_payment(amount, our_account.account_number)
         else:
             raise ValidationError('Cant return more than what you owe')
 
