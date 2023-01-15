@@ -6,13 +6,33 @@ import requests
 
 @kronos.register('* * * * *')
 class Command(BaseCommand):
+    def abort(self, transaction):   
+        print(f'Transaction with ID: {transaction.token} failed')
+        transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
+        
+        transaction.status = 'to_be_deleted'
+        transaction.save()
+        
+        url = transaction.reservation_bank_account.bank.api_url
+        # send cancel request to bank
+        requests.put(url, data = {'status': 'to_be_deleted' })
+
+        print(f'Transaction with ID: {transaction.token} reverted')
+    
     def handle(self, *args, **options):
         # Get all pending transactions in External Ledger Table
         pending_transactions = ExternalLedgerMetadata.objects.filter(status='pending')
         
         # Make POST request to bank API to create a reservation
         for transaction in pending_transactions:
-            # TODO: add check how old the transaction is
+            if transaction.failed_attempts > 3:
+                self.abort(transaction)
+            
+            if transaction.successful_attempts > 2:
+                transaction.status = 'confirmed'
+                transaction.save()
+                print(f'Transaction completed for transfer with ID: {transaction.token}')
+            
             print(f'Creating reservation for transfer with ID: {transaction.token}')
             external_bank_url = transaction.reservation_bank_account.bank.api_url
             external_bank_metadata = {
@@ -30,23 +50,19 @@ class Command(BaseCommand):
 
                 url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
 
-                # TODO: repeat n times
-                res = requests.put(url, data = {'status': 'to_be_confirmed' })
-
-                if res.ok:
-                    transaction.status = 'confirmed'
-                    transaction.save()
-                    print(f'Transaction completed for transfer with ID: {transaction.token}')
-                else:
-                    print(f'Transaction with ID: {transaction.token} failed', res.text)
-                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
-                    
-                    transaction.status = 'to_be_deleted'
-                    transaction.save()
-                    
-                    # send cancel request to bank
-                    requests.put(url, data = {'status': 'to_be_deleted' })
-
-                    print(f'Transaction with ID: {transaction.token} reverted')
+                for i in range(3):
+                    transaction_status = requests.get(url)
+                    if transaction_status.json()['status'] == 'confirmed':
+                        # TODO: validate this is how it should be
+                        break
+                    res = requests.put(url, data = {'status': 'to_be_confirmed' })
+                    print(res.status_code, res)
+                    if res.ok:
+                        transaction.successful_attempts += 1                        
+                    else:
+                        transaction.failed_attempts += 1
+                    transaction.save() 
             else:
+                transaction.failed_attempts += 1
+                transaction.save()  
                 print(f'Reservation failed for transfer with ID: {transaction.token}', res.text)
