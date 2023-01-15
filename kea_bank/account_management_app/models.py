@@ -93,11 +93,11 @@ class Account(models.Model):
         new_account.save()
     
     def get_transactions(self):
-        my_transactions = Ledger.objects.filter(account=self)
+        my_transactions = Ledger.objects.filter(account=self).order_by('-created_timestamp')
         return my_transactions
 
     def get_loan_transactions(self):
-        loan_transactions = Ledger.objects.filter(account=self, is_loan=True)
+        loan_transactions = Ledger.objects.filter(account=self, is_loan=True).order_by('-created_timestamp')
         return loan_transactions
     
     def get_amount_owed(self):
@@ -108,7 +108,7 @@ class Account(models.Model):
         return my_loan_transactions_with_balance['balance']
     
     def get_saving_account_transactions(self):
-        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True)
+        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True).order_by('-created_timestamp')
         return saving_account_transactions
     
     @property
