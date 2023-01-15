@@ -46,14 +46,6 @@ class Customer(models.Model):
         return Account.objects.get(account_type='operational')
     
     @property
-    def total_balance(self):
-        accounts = Account.objects.filter(user=self.user)
-        total_balance = 0
-        for item in accounts:
-            total_balance += item.balance
-        return total_balance
-    
-    @property
     def total_balance_bank_accounts(self):
         accounts = self.get_ordinary_accounts()
         total_balance = 0
@@ -120,7 +112,6 @@ class Account(models.Model):
         saving_transaction_with_balance = saving_transaction.aggregate(balance=Sum("amount"))
         return saving_transaction_with_balance['balance']
 
-
     @property
     def balance(self):
         my_transactions = self.get_transactions()
@@ -129,23 +120,27 @@ class Account(models.Model):
         my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
         return my_transactions_with_balance['balance']
     
-    def pay_back_loan(self, amount_owed, amount, account_number):
+    def pay_back_loan(self, amount, amount_owed):
         if amount_owed >= amount:
-                self.validate_payment(amount, self.balance, is_loan=True)
-                self.make_payment(amount, account_number, is_loan=True)
+                our_account = self.user.customer.get_bank_operational_account()
+                self.make_payment(amount, our_account.account_number, is_loan=True)
         else:
             raise ValidationError('Cant return more than what you owe')
 
-    def validate_payment(self, amount, balance, is_loan=False):
+    def validate_payment(self, amount, balance, user, is_loan=False):
         if not isinstance(amount, Decimal):
             raise ValidationError('Amount must be of type Decimal')
         if amount < 0:
             raise ValidationError('Please use a positive amount')
         if is_loan==False and balance < amount:
             raise ValidationError('Balance is too low')
+        if is_loan==True and hasattr(user, 'customer'):
+            customer_rank = user.customer.rank
+            if customer_rank == 'basic':
+                raise ValidationError('Cant apply for loan. Please upgrade your user rank.')
     
     def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
-        self.validate_payment(amount, self.balance, is_loan=is_loan)
+        self.validate_payment(amount, self.balance, self.user, is_loan=is_loan)
 
         target_account = Account.objects.get(account_number=account_number)
 
