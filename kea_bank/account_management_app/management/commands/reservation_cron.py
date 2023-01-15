@@ -8,16 +8,24 @@ import requests
 class Command(BaseCommand):
     def abort(self, transaction):   
         print(f'Transaction with ID: {transaction.token} failed')
-        transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
-        
-        transaction.status = 'to_be_deleted'
-        transaction.save()
         
         url = transaction.reservation_bank_account.bank.api_url
         # send cancel request to bank
-        requests.put(url, data = {'status': 'to_be_deleted' })
-
-        print(f'Transaction with ID: {transaction.token} reverted')
+        res = requests.put(url, data = {'status': 'to_be_deleted' })
+        
+        if (res.ok):
+            transaction.status = 'to_be_deleted'
+            transaction.save()
+            
+            print(f'Transaction with ID: {transaction.token} reverted')
+        else:
+            print(f'Transaction with ID: {transaction.token} can not be reverted, trying again')
+    
+    def confirm(self, transaction):
+        # TODO: add further validation, e.g. checking status and commiting only of it's positive (confirmed, to_be_confirmed)
+        transaction.status = 'confirmed'
+        transaction.save()
+        print(f'Transaction completed for transfer with ID: {transaction.token}')
     
     def handle(self, *args, **options):
         # Get all pending transactions in External Ledger Table
@@ -25,14 +33,12 @@ class Command(BaseCommand):
         
         # Make POST request to bank API to create a reservation
         for transaction in pending_transactions:
-            if transaction.failed_attempts > 3:
+            if transaction.failed_attempts > 2:
                 self.abort(transaction)
                 break
             
             if transaction.successful_attempts > 2:
-                transaction.status = 'confirmed'
-                transaction.save()
-                print(f'Transaction completed for transfer with ID: {transaction.token}')
+                self.confirm(transaction)
                 break
             
             print(f'Creating reservation for transfer with ID: {transaction.token}')
@@ -46,24 +52,30 @@ class Command(BaseCommand):
                 'token': transaction.token,
                 'status': 'in_progress',
             }
-            res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
-            if (res.status_code == 201):
-                print(f'Reservation created for transfer with ID: {transaction.token}')
+            try: 
+                res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
+                if (res.status_code == 201):
+                    print(f'Reservation created for transfer with ID: {transaction.token}')
 
-                url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
+                    url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
 
-                for i in range(3):
-                    transaction_status = requests.get(url)
-                    if transaction_status.json()['status'] == 'confirmed':
-                        # TODO: validate this is how it should be
-                        break
-                    res = requests.put(url, data = {'status': 'to_be_confirmed' })
-                    if res.ok:
-                        transaction.successful_attempts += 1                        
-                    else:
-                        transaction.failed_attempts += 1
-                    transaction.save() 
-            else:
+                    for i in range(3):
+                        transaction_status = requests.get(url)
+                        # Handling the unlikely event in which receiver confirms before sender
+                        if transaction_status.json()['status'] == 'confirmed':
+                            self.confirm(transaction)
+                            break
+                        res = requests.put(url, data = {'status': 'to_be_confirmed' })
+                        if res.ok:
+                            transaction.successful_attempts += 1                        
+                        else:
+                            transaction.failed_attempts += 1
+                        transaction.save()
+                else:
+                    transaction.failed_attempts += 1
+                    transaction.save()  
+                    print(f'Reservation failed for transfer with ID: {transaction.token}', res.text)
+            except:
                 transaction.failed_attempts += 1
                 transaction.save()  
-                print(f'Reservation failed for transfer with ID: {transaction.token}', res.text)
+                print(f'Reservation failed for transfer with ID: {transaction.token}')
