@@ -27,11 +27,13 @@ class Command(BaseCommand):
         for transaction in pending_transactions:
             if transaction.failed_attempts > 3:
                 self.abort(transaction)
+                break
             
             if transaction.successful_attempts > 2:
                 transaction.status = 'confirmed'
                 transaction.save()
                 print(f'Transaction completed for transfer with ID: {transaction.token}')
+                break
             
             print(f'Creating reservation for transfer with ID: {transaction.token}')
             external_bank_url = transaction.reservation_bank_account.bank.api_url
@@ -56,7 +58,6 @@ class Command(BaseCommand):
                         # TODO: validate this is how it should be
                         break
                     res = requests.put(url, data = {'status': 'to_be_confirmed' })
-                    print(res.status_code, res)
                     if res.ok:
                         transaction.successful_attempts += 1                        
                     else:
