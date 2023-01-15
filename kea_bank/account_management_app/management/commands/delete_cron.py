@@ -16,6 +16,6 @@ class Command(BaseCommand):
             transaction.save()
             
             # negate reservation transaction in Ledger table
-            transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
+            transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number)
             
             print(f'Transaction deleted with ID: {transaction.token}')

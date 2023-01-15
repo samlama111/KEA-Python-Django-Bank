@@ -216,12 +216,14 @@ def external_transfer(request, account_number):
         'accounts': accounts,
         'total_balance': customer.total_balance_bank_accounts
     }
-    
     if request.method == 'POST':
         try:
             external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
             amount = Decimal(request.POST['amount'])
-            external_bank_account.validate_payment(amount=amount, balance=customer.total_balance_bank_accounts)
+            # Make local reservation to external bank 
+            sender_account = Account.objects.get(account_number=account_number)
+            sender_account.make_payment(amount, external_bank_account.account_number)
+            context['total_balance'] = customer.total_balance_bank_accounts
             ExternalLedgerMetadata.objects.create(
                 status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
                 amount=amount, sender_account_number=account_number,
