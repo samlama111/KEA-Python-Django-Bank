@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 from django.db import models, transaction
 from django.contrib.auth.models import User
@@ -35,8 +36,8 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
-    def get_accounts(self):
-        return Account.objects.filter(user=self.user)
+    def get_ordinary_accounts(self):
+        return Account.objects.filter(user=self.user, is_saving_account=False)
     
     def get_external_banks(self):    
         return Bank.objects.filter(bank_type='external')
@@ -46,7 +47,7 @@ class Customer(models.Model):
     
     @property
     def total_balance(self):
-        accounts = self.get_accounts()
+        accounts = Account.objects.filter(user=self.user)
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -54,7 +55,7 @@ class Customer(models.Model):
     
     @property
     def total_balance_bank_accounts(self):
-        accounts = Account.objects.filter(user=self.user, is_saving_account = False)
+        accounts = self.get_ordinary_accounts()
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -93,11 +94,11 @@ class Account(models.Model):
         new_account.save()
     
     def get_transactions(self):
-        my_transactions = Ledger.objects.filter(account=self)
+        my_transactions = Ledger.objects.filter(account=self).order_by('-created_timestamp')
         return my_transactions
 
     def get_loan_transactions(self):
-        loan_transactions = Ledger.objects.filter(account=self, is_loan=True)
+        loan_transactions = Ledger.objects.filter(account=self, is_loan=True).order_by('-created_timestamp')
         return loan_transactions
     
     def get_amount_owed(self):
@@ -108,7 +109,7 @@ class Account(models.Model):
         return my_loan_transactions_with_balance['balance']
     
     def get_saving_account_transactions(self):
-        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True)
+        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True).order_by('-created_timestamp')
         return saving_account_transactions
     
     @property
@@ -135,19 +136,23 @@ class Account(models.Model):
             # TODO: display error message
             print('Cant return more than what you owe')
 
-    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+    def validate_payment(self, amount, balance, is_loan=False):
+        if not isinstance(amount, Decimal):
+            raise ValidationError('Amount must be of type Decimal')
         if amount < 0:
             raise ValidationError('Please use a positive amount')
-
-        if is_loan==False and self.balance < int(amount):
+        if is_loan==False and balance < amount:
             raise ValidationError('Balance is too low')
+    
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+        self.validate_payment(amount, self.balance, is_loan=is_loan)
 
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
             transaction_id = uuid.uuid4()
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=amount, transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=self, is_creditor=False, amount=-amount, transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
     
 
 class Ledger(models.Model):

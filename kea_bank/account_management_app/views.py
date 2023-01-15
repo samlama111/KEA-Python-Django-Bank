@@ -1,6 +1,7 @@
 from decimal import Decimal
+import uuid
 from django.shortcuts import render
-from . models import Account
+from . models import Account, ExternalLedgerMetadata
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -13,7 +14,7 @@ def customer_check(user):
 @user_passes_test(customer_check, login_url='login_app:login')
 def index(request):
     user = request.user
-    accounts = Account.objects.filter(user=user, is_saving_account=False)
+    accounts = user.customer.get_ordinary_accounts()
     total_balance = user.customer.total_balance_bank_accounts
 
     return render(request, 'account_management_app/index.html', {
@@ -33,6 +34,7 @@ def make_loan(request, account_number, pay_back=False):
         if customer.rank == "basic":
             print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
+        external_banks = request.user.customer.get_external_banks()
         # gets banks operational account
         our_account = customer.get_bank_operational_account()
         if pay_back:
@@ -45,7 +47,8 @@ def make_loan(request, account_number, pay_back=False):
             'account': my_account,
             'transactions': transactions,
             'amount_owed': amount_owed,
-            'loan_transactions': loan_transactions
+            'loan_transactions': loan_transactions,
+            'external_banks': external_banks
         })
     else:
         return render(request, 'account_management_app/loan.html', {
@@ -71,27 +74,30 @@ def pay_back_loan(request, account_number):
 def transfer(request, account_number):
     customer = request.user.customer
     my_account = Account.objects.get(account_number=account_number)
-    accounts = customer.get_accounts()
-
-    try:
-        my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
-    except Exception as e:
-        context['error'] = f'there was an error: {e}'
+    accounts = customer.get_ordinary_accounts()
 
     context = {
         'accounts': accounts,
         'total_balance': customer.total_balance
     }
+    try:
+        my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
+        context['total_balance'] = customer.total_balance
+    except Exception as e:
+        context['error'] = f'There was an error: {e}'
+
     return render(request, 'account_management_app/index.html', context)
 
 @login_required(login_url='login_app:login')
 def account_details(request, account_number):
     account = Account.objects.get(account_number = account_number)
     transactions = account.get_transactions()
+    external_banks = request.user.customer.get_external_banks()
 
     return render(request, 'account_management_app/account_details.html', {
         'account': account,
-        'transactions': transactions
+        'transactions': transactions,
+        'external_banks': external_banks
     })
 
 
@@ -203,3 +209,27 @@ def chatbot_conversation(request):
         'conversation': conversation
         }
     return render(request, 'account_management_app/chatbot.html', context)
+
+def external_transfer(request, account_number):
+    customer = request.user.customer
+    accounts = customer.get_ordinary_accounts()
+    
+    context = {
+        'accounts': accounts,
+        'total_balance': customer.total_balance_bank_accounts
+    }
+    
+    if request.method == 'POST':
+        try:
+            external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
+            amount = Decimal(request.POST['amount'])
+            external_bank_account.validate_payment(amount=amount, balance=customer.total_balance_bank_accounts)
+            ExternalLedgerMetadata.objects.create(
+                status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
+                amount=amount, sender_account_number=account_number,
+                receiver_account_number=request.POST['account_number']
+            )
+        except Exception as e:
+            context['error'] = f'There was an error: {e}'   
+
+    return render(request, 'account_management_app/index.html', context)
