@@ -131,10 +131,10 @@ class Account(models.Model):
     
     def pay_back_loan(self, amount_owed, amount, account_number):
         if amount_owed >= amount:
+                self.validate_payment(amount, self.balance, is_loan=True)
                 self.make_payment(amount, account_number, is_loan=True)
         else:
-            # TODO: display error message
-            print('Cant return more than what you owe')
+            raise ValidationError('Cant return more than what you owe')
 
     def validate_payment(self, amount, balance, is_loan=False):
         if not isinstance(amount, Decimal):
