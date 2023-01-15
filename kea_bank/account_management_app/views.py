@@ -31,14 +31,12 @@ def make_loan(request, account_number, pay_back=False):
     loan_transactions = my_account.get_loan_transactions()
 
     if request.method == 'POST':
-        if customer.rank == "basic":
-            print('Cant apply for loan. Please upgrade your user rank.')
         amount = Decimal(request.POST['amount'])
         external_banks = request.user.customer.get_external_banks()
         # gets banks operational account
         our_account = customer.get_bank_operational_account()
         if pay_back:
-            my_account.pay_back_loan(amount_owed, amount, our_account.account_number)
+            my_account.pay_back_loan(amount, amount_owed)
         else:
             our_account.make_payment(amount, account_number, is_loan=True)
         # gets transactions after making payment
@@ -78,11 +76,11 @@ def transfer(request, account_number):
 
     context = {
         'accounts': accounts,
-        'total_balance': customer.total_balance
+        'total_balance': customer.total_balance_bank_accounts
     }
     try:
         my_account.make_payment(Decimal(request.POST['amount']), request.POST['account_number'])
-        context['total_balance'] = customer.total_balance
+        context['total_balance'] = customer.total_balance_bank_accounts
     except Exception as e:
         context['error'] = f'There was an error: {e}'
 
@@ -218,12 +216,14 @@ def external_transfer(request, account_number):
         'accounts': accounts,
         'total_balance': customer.total_balance_bank_accounts
     }
-    
     if request.method == 'POST':
         try:
             external_bank_account = Account.objects.get(bank=request.POST['bank_id'])
             amount = Decimal(request.POST['amount'])
-            external_bank_account.validate_payment(amount=amount, balance=customer.total_balance_bank_accounts)
+            # Make local reservation to external bank 
+            sender_account = Account.objects.get(account_number=account_number)
+            sender_account.make_payment(amount, external_bank_account.account_number)
+            context['total_balance'] = customer.total_balance_bank_accounts
             ExternalLedgerMetadata.objects.create(
                 status='pending', token= uuid.uuid4(), reservation_bank_account=external_bank_account,
                 amount=amount, sender_account_number=account_number,
