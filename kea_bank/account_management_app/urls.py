@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .api import Reserve, UpdateState
+from .api import Reserve, GetUpdateStatus
 
 app_name = 'account_management_app'
 
@@ -20,5 +20,5 @@ urlpatterns = [
     path('delete-account/<int:account_number>', views.delete_saving_account, name="delete_saving_account"),
     path('saving_account_transfer/<int:account_number>/', views.saving_account_transfer, name="saving_account_transfer"),
     path('api/v1/transaction', Reserve.as_view()), #post
-    path('api/v1/transaction/<uuid:token>/', UpdateState.as_view()), #put
+    path('api/v1/transaction/<uuid:token>/', GetUpdateStatus.as_view()), #get, put
 ]
