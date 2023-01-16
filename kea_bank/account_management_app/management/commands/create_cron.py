@@ -7,7 +7,7 @@ import kronos
 @kronos.register('* * * * *')
 class Command(BaseCommand):
     def abort(self, transaction):
-        print(f'Receiver does not exist, cancelling transaction with ID: {transaction.token}')
+        print(f'Aborting transaction with ID: {transaction.token}')
         # Abort locally
         transaction.status = 'cancelled'
         transaction.save()
@@ -42,7 +42,9 @@ class Command(BaseCommand):
                         # TODO: change to unsuccessful attempts
                         self.abort(transaction)
                 else: 
+                    print(f'Receiver does not exist, cancelling transaction with ID: {transaction.token}')
                     self.abort(transaction)
-            except Exception:
+            except Exception as e:
+                print(e)
                 self.abort(transaction)
             
