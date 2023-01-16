@@ -18,6 +18,14 @@ class Command(BaseCommand):
         # From receiver to reservation
         requests.put(url, data = {'status': 'to_be_deleted' })
     
+    def confirm(self, transaction):
+        # Create entry in local ledger
+        transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number, is_loan=True)
+        # Update status to confirmed
+        transaction.status = 'confirmed'
+        transaction.save()
+        print(f'Transaction finished for transfer with ID: {transaction.token}')
+    
     def handle(self, *args, **options):
         to_be_created_transactions = ExternalLedgerMetadata.objects.filter(status='to_be_confirmed')
         
@@ -28,23 +36,23 @@ class Command(BaseCommand):
                 if receiver_account:
                     external_bank_url = transaction.reservation_bank_account.bank.api_url
                     url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
-                    # TODO: repeat
-                    transaction_status = requests.get(url)
-                    if transaction_status.json()['status'] == 'confirmed':
-                        # TODO: change to successful attempts
-                        # Create entry in local ledger
-                        transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number, is_loan=True)
-                        # Update status to confirmed
-                        transaction.status = 'confirmed'
-                        transaction.save()
-                        print(f'Transaction finished for transfer with ID: {transaction.token}')
-                    else: 
-                        # TODO: change to unsuccessful attempts
+
+                    if transaction.failed_attempts > 2:
                         self.abort(transaction)
+                        break
+                    
+                    for i in range(3):
+                        transaction_status = requests.get(url)
+                        if transaction_status.json()['status'] == 'confirmed':
+                            self.confirm(transaction)                      
+                        else:
+                            transaction.failed_attempts += 1
+                        transaction.save()
+                            
                 else: 
                     print(f'Receiver does not exist, cancelling transaction with ID: {transaction.token}')
                     self.abort(transaction)
             except Exception as e:
                 print(e)
-                self.abort(transaction)
+                transaction.failed_attempts += 1
             
