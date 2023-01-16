@@ -12,7 +12,8 @@
     </div>
 
     <div class="conversation-wrapper">
-        {% for value in conversation %}
+    {% for conv in conversation %}
+        {% for value in conv %}
 
         <div class="question">
             {{value.question}}
@@ -21,6 +22,9 @@
             {{value.response}}
         </div>
         {% endfor %}
+    {% endfor %}
+
+
 
     </div>
 
@@ -32,6 +36,14 @@
             <button type="submit">Send</button>
         </div>
     </form>
+</div>
+
+<div class="question-example">
+    <h3>Chatbot can answer to this questions:</h3>
+    <p>How do I transfer money?</p>
+    <p>How do I make a loan?</p>
+    <p>How do I return money?</p>
+    <p>How do I add money to my transfer account?</p>
 </div>
 
 

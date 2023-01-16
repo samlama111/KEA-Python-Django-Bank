@@ -180,11 +180,13 @@ def saving_account_transfer(request, account_number):
         }
     return render(request, 'account_management_app/saving_account_detail.html', context)
 
+
 @login_required(login_url='login_app:login')
 @user_passes_test(customer_check, login_url='login_app:login')
-def chatbot_messages(request):
+def chatbot_conv(request):
     user = request.user
-    conversation = chatbot.get_conversation(user)
+
+    conversation = chatbot.get_all_conv(user)
     context = {
         'conversation': conversation
     }
@@ -192,22 +194,18 @@ def chatbot_messages(request):
 
 @login_required(login_url='login_app:login')
 @user_passes_test(customer_check, login_url='login_app:login')
-def chatbot_conversation(request):
+def chatbot_messages(request):
     user = request.user
 
-    context={}
     if (request.method == 'POST'):
         message = request.POST['message']
-        response = chatbot.get_chatbot_response(message)
-        conversation = chatbot.get_conversation(user)
-
-        context = {
-        'message' : message,
-        'response':response,
-        'conversation': conversation
-        }
-    return render(request, 'account_management_app/chatbot.html', context)
-
+        chatbot.save_conversation(user, message)
+        return HttpResponseRedirect(reverse('account_management_app:chatbot_conv'))
+    else:
+        return HttpResponseRedirect(reverse('account_management_app:chatbot_conv'))
+    
+@login_required(login_url='login_app:login')
+@user_passes_test(customer_check, login_url='login_app:login')
 def external_transfer(request, account_number):
     customer = request.user.customer
     accounts = customer.get_ordinary_accounts()
