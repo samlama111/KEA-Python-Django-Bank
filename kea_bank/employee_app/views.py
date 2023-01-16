@@ -18,18 +18,16 @@ from . models import Employee
 
 @login_required(login_url='login_app:login')
 def index(request):
-    if hasattr(request.user,'employee'):
-        try:
-            customers = Customer.objects.all()
-            context = {
-                'customers': customers,
-            }
+    try:
+        customers = Customer.objects.all()
+        context = {
+            'customers': customers,
+        }
 
-            return render(request, 'employee_app/index.html', context)
-        except Customer.DoesNotExist:
-            return render(request, 'login_app/login.html', {})
-    else:
+        return render(request, 'employee_app/index.html', context)
+    except Customer.DoesNotExist:
         return render(request, 'login_app/login.html', {})
+
 
 
 

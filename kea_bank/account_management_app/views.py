@@ -13,6 +13,8 @@ from . models import Customer
 def index(request):
     try:
         user = request.user
+        if user.username == 'employee': # TODO: change to user.is_employee
+            return HttpResponseRedirect(reverse('employee_app:index'))
         accounts = Account.objects.filter(user=user, is_saving_account=False)
         total_balance = user.customer.total_balance_bank_accounts
 
