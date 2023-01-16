@@ -23,7 +23,8 @@ def index(request):
 @login_required(login_url='login_app:login')
 def my_profile(request):
     try:
-        return render(request, 'employee_app/index.html', {})
+        user = request.user
+        return render(request, 'employee_app/my_profile.html', {'user': user})
     except Customer.DoesNotExist:
         return render(request, 'login_app/login.html', {})
 
@@ -127,12 +128,3 @@ def delete_account(request, account_number, pk):
         account.delete()
         return HttpResponseRedirect(
             reverse('employee_app:customer_detail', kwargs={'pk': pk}))
-
-
-@login_required(login_url='/accounts/login/')
-def my_profile(request):
-    try:
-        user = request.user
-        return render(request, 'employee_app/my_profile.html', {'user': user})
-    except Customer.DoesNotExist:
-        return render(request, 'login_app/login.html', {})
