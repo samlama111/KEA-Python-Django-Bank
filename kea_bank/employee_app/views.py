@@ -9,37 +9,27 @@ from account_management_app.models import Customer, Account
 
 @login_required(login_url='login_app:login')
 def index(request):
-    try:
-        customers = Customer.objects.all()
-        context = {
-            'customers': customers,
-        }
+    customers = Customer.objects.all()
+    context = {
+        'customers': customers,
+    }
 
-        return render(request, 'employee_app/index.html', context)
-    except Customer.DoesNotExist:
-        return render(request, 'login_app/login.html', {})
+    return render(request, 'employee_app/index.html', context)
 
 
 @login_required(login_url='login_app:login')
 def my_profile(request):
-    try:
-        user = request.user
-        return render(request, 'employee_app/my_profile.html', {'user': user})
-    except Customer.DoesNotExist:
-        return render(request, 'login_app/login.html', {})
+    user = request.user
+    return render(request, 'employee_app/my_profile.html', {'user': user})
 
 
 @login_required(login_url='login_app:login')
 def account_detail(request, account_number):
-    try:
-        account = Account.objects.get(account_number=account_number)
-        transactions = account.get_transactions
+    account = Account.objects.get(account_number=account_number)
+    transactions = account.get_transactions
 
-        context = {'account': account, 'transactions': transactions}
-        return render(request, 'employee_app/account_detail.html', context)
-
-    except Customer.DoesNotExist:
-        return render(request, 'login_app/login.html', {})
+    context = {'account': account, 'transactions': transactions}
+    return render(request, 'employee_app/account_detail.html', context)
 
 
 @login_required(login_url='login_app:login')
@@ -68,44 +58,33 @@ def create_customer(request):
             context = {'error': 'Error creating customer'}
             return render(request, 'employee_app/create_customer.html',
                           context)
-        else:
-            return render(request, 'employee_app/create_customer.html',
-                          context)
     return render(request, 'employee_app/create_customer.html', {})
 
 
 @login_required(login_url='login_app:login')
 def customer_detail(request, pk):
-    try:
-        customer = Customer.objects.get(pk=pk)
-        accounts = Account.objects.filter(user=customer.user)
+    customer = Customer.objects.get(pk=pk)
+    accounts = Account.objects.filter(user=customer.user)
 
-        context = {
-            'customer': customer,
-            'accounts': accounts,
-        }
-        return render(request, 'employee_app/customer_detail.html', context)
-
-    except Customer.DoesNotExist:
-        raise Http404("Customer does not exist")
+    context = {
+        'customer': customer,
+        'accounts': accounts,
+    }
+    return render(request, 'employee_app/customer_detail.html', context)
 
 
 @login_required(login_url='login_app:login')
 def update_customer(request, pk):
-    try:
-        customer = Customer.objects.get(pk=pk)
-        customer.rank = request.POST['rank']
-        customer.save()
-        accounts = Account.objects.filter(user=customer.user)
+    customer = Customer.objects.get(pk=pk)
+    customer.rank = request.POST['rank']
+    customer.save()
+    accounts = Account.objects.filter(user=customer.user)
 
-        context = {
-            'customer': customer,
-            'accounts': accounts,
-        }
-        return render(request, 'employee_app/customer_detail.html', context)
-
-    except Customer.DoesNotExist:
-        raise Http404("Customer does not exist")
+    context = {
+        'customer': customer,
+        'accounts': accounts,
+    }
+    return render(request, 'employee_app/customer_detail.html', context)
 
 
 @login_required(login_url='login_app:login')
