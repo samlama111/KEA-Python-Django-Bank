@@ -17,7 +17,7 @@
     {% for account in accounts %}
     <div class="account-list-wrapper">
         <a id="account-number" href="{% url 'account_management_app:saving_account_detail' account_number=account.account_number  %}">
-            {{account.account_number}}
+            Account number: {{account.account_number}}
         </a> 
         <form action="{% url 'account_management_app:delete_saving_account' account_number=account.account_number  %}" method="POST">
             {% csrf_token %}
