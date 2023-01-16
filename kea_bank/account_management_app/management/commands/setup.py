@@ -12,7 +12,7 @@ class Command(BaseCommand):
         print('Adding demo data ...')
 
         # bank entity created
-        bank = Bank.objects.create(bank_id=1000, name="Default bank", api_url="http://localhost:3000", bank_type='local')
+        bank = Bank.objects.create(bank_id=1000, name="Default bank", api_url="http://localhost:8000", bank_type='local')
         
         bank_user = User.objects.create_user('bank', email='', password=secrets.token_urlsafe(64))
         bank_user.is_active = False

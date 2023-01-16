@@ -124,7 +124,7 @@ class Account(models.Model):
     def pay_back_loan(self, amount, amount_owed):
         if amount_owed >= amount:
                 our_account = self.user.customer.get_bank_operational_account()
-                self.make_payment(amount, our_account.account_number, is_loan=True)
+                self.make_payment(amount, our_account.account_number)
         else:
             raise ValidationError('Cant return more than what you owe')
 
@@ -173,11 +173,13 @@ class ExternalLedgerMetadata(models.Model):
     receiver_account_number = models.IntegerField()
     amount = models.DecimalField(max_digits=15, decimal_places=4)
     created_timestamp = models.DateTimeField(auto_now_add=True)
+    successful_attempts = models.IntegerField(default=0)
+    failed_attempts = models.IntegerField(default=0)
     
     class StatusType(models.TextChoices):
-        PENDING='pending'
-        IN_PROGRESS='in_progress'
-        TO_BE_CONFIRMED='to_be_confirmed'
+        PENDING='pending' # sending-side only
+        IN_PROGRESS='in_progress' # receiving-side only
+        TO_BE_CONFIRMED='to_be_confirmed' # receiving-side only
         TO_BE_DELETED='to_be_deleted'
         CONFIRMED='confirmed'
         CANCELLED='cancelled'
