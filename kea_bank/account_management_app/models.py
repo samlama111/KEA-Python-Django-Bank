@@ -180,9 +180,9 @@ class ExternalLedgerMetadata(models.Model):
     failed_attempts = models.IntegerField(default=0)
     
     class StatusType(models.TextChoices):
-        PENDING='pending'
-        IN_PROGRESS='in_progress'
-        TO_BE_CONFIRMED='to_be_confirmed'
+        PENDING='pending' # sending-side only
+        IN_PROGRESS='in_progress' # receiving-side only
+        TO_BE_CONFIRMED='to_be_confirmed' # receiving-side only
         TO_BE_DELETED='to_be_deleted'
         CONFIRMED='confirmed'
         CANCELLED='cancelled'

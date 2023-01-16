@@ -24,7 +24,7 @@ class Command(BaseCommand):
     def confirm(self, transaction):
         transaction.status = 'confirmed'
         transaction.save()
-        print(f'Transaction completed for transfer with ID: {transaction.token}')
+        print(f'Transaction reservation completed for transfer with ID: {transaction.token}')
     
     def handle(self, *args, **options):
         # Get all pending transactions in External Ledger Table
@@ -43,10 +43,10 @@ class Command(BaseCommand):
             print(f'Creating reservation for transfer with ID: {transaction.token}')
             external_bank_url = transaction.reservation_bank_account.bank.api_url
             external_bank_metadata = {
-                'amount': int(transaction.amount),
+                'amount': int(transaction.amount), # int as Decimal can't be sent in JSON
                 'receiver_account_number': transaction.receiver_account_number, 
                 'sender_account_number': transaction.sender_account_number,
-                # Local bank's ID in external bank is hardcoded to 4
+                # TODO: Local bank's ID in external bank is hardcoded to 4
                 'reservation_bank_account': 4,
                 'token': transaction.token,
                 'status': 'in_progress',
