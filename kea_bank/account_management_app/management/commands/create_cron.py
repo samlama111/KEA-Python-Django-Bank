@@ -41,14 +41,13 @@ class Command(BaseCommand):
                         self.abort(transaction)
                         break
                     
-                    for i in range(3):
-                        transaction_status = requests.get(url)
-                        if transaction_status.json()['status'] == 'confirmed':
-                            self.confirm(transaction)  
-                            break                    
-                        else:
-                            transaction.failed_attempts += 1
-                        transaction.save()
+                    transaction_status = requests.get(url)
+                    if transaction_status.json()['status'] == 'confirmed':
+                        self.confirm(transaction)
+                        break
+                    else:
+                        transaction.failed_attempts += 1
+                    transaction.save()
                             
                 else: 
                     print(f'Receiver does not exist, cancelling transaction with ID: {transaction.token}')
