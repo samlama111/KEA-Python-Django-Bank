@@ -39,9 +39,11 @@ Run `python nltk_download.py` and use the GUI to download all packages.
 
 ## Inter-bank transfer prerequisites
 
-- Cron service running
-  - implies Windows isn't supported, but can still execute transfers, but just manually, using `python manage.py {name_of_cron_task}`
+- Cron service running (if you want the transfer process to not be manual)
+  - this implies the features isn't supported on Windows
+  - transfers can be execuated manually, using `python manage.py {name_of_cron_task}`
+  - on WSL remember to start `cron` by running `sudo service cron start`
 - Cron scripts registered as tasks using `python manage.py installtasks`
 - Transactions can be iniated from your particular account, to any external bank selected from a drop-down
-- For a successful transfer, both servers need to have a local Bank account of each other (pointing to the correct URL)
-  - Target customer account must exist
+- For a successful transfer, both servers need to have a local reservation Bank account of each other (pointing to the correct URL)
+  - and the receiving, Target customer account must exist
