@@ -17,7 +17,9 @@ def login_success(request):
     """
     Redirects users based on whether they are a customer or employee
     """
-    if is_user_customer_check(request.user):
+    if request.user.is_superuser:
+        return HttpResponseRedirect(reverse('admin:index'))
+    elif is_user_customer_check(request.user):
         # user is a customer
         return redirect("account_management_app:index")
     else:
