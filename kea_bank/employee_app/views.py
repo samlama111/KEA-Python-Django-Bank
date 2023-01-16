@@ -11,8 +11,8 @@ def employee_check(user):
     return hasattr(user, "employee")
 
 
-@login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
+@login_required(login_url='two_factor:login')
+@user_passes_test(employee_check, login_url='two_factor:login')
 def index(request):
     try:
         customers = Customer.objects.all()

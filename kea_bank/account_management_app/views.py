@@ -12,8 +12,8 @@ def is_user_customer_check(user):
     return hasattr(user, "customer")
 
 
-@login_required(login_url='login_app:login')
-@user_passes_test(is_user_customer_check, login_url='login_app:login')
+@login_required(login_url='two_factor:login')
+@user_passes_test(is_user_customer_check, login_url='two_factor:login')
 def index(request):
     try:
         user = request.user
