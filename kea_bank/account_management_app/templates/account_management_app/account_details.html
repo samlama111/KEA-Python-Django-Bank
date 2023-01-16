@@ -3,25 +3,40 @@
         <div id="account_{{account.account_number}}">
             <section class="col-element">
                 <div class="top-details">
-                    <p>{{account.account_number}}</p>    
+                    <h2>{{account.account_number}}</h2>    
                     <a id="close-popup" href="/">Close</a>
+                </div>
+                <div class="balance">
+                    <p>Balance: {{account.balance}} </p>
                 </div>
             </section>
         
             <section class="popup-wrapper">
                 <div class="transfering-wrapper">
-                    <h3>Transfering money</h3>
-
-                    <div class="balance">
-                        <p>Balance: {{account.balance}} </p>
-                    </div>
-    
+                    <h3>Transfer within our bank</h3>
                     <div class="sending-money">
                         <form action="{% url 'account_management_app:transfer' account.account_number %}" method="POST">
                             {% csrf_token %}
                             <input name="amount" type="number" placeholder="Amount">
                             <input name="account_number" type="text" placeholder="Account number">
                             <input name="note" type="text" placeholder="Note">
+                            <button>
+                                Send
+                            </button>
+                        </form>
+                    </div>
+                    <hr>
+                    <h3>Transfer to other banks</h3>
+                    <div class="sending-money">
+                        <form action="{% url 'account_management_app:external_transfer' account.account_number %}" method="POST">
+                            {% csrf_token %}
+                            <select name="bank_id">
+                                {% for bank in external_banks %}
+                                  <option value="{{ bank.bank_id }}">{{ bank.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <input name="amount" type="number" placeholder="Amount">
+                            <input name="account_number" type="text" placeholder="Account number">
                             <button>
                                 Send
                             </button>
@@ -37,14 +52,12 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Note</th>
-    
                             </tr>
                         </thead>
                         {% for transaction in transactions%}
     
                         <tbody>
                             <tr>
-    
                                 <td>{{transaction.created_timestamp}}</td>
                                 <td>{{transaction.amount}}</td>
                                 <td>{{transaction.note}}</td>
