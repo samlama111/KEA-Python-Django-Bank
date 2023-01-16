@@ -1,6 +1,6 @@
 from decimal import Decimal
 import uuid
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Account, ExternalLedgerMetadata
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
@@ -10,6 +10,18 @@ from . import chatbot
 
 def is_user_customer_check(user):
     return hasattr(user, "customer")
+
+
+@login_required(login_url='login_app:login')
+def login_success(request):
+    """
+    Redirects users based on whether they are a customer or employee
+    """
+    if is_user_customer_check(request.user):
+        # user is a customer
+        return redirect("account_management_app:index")
+    else:
+        return redirect("employee_app:index")
 
 
 @login_required(login_url='login_app:login')

@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-#for development only - to be changed in production environment
+# for development only - to be changed in production environment
 ALLOWED_IPS = ['127.0.0.1', 'localhost']
 
 # Application definition
@@ -140,5 +140,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'kea_bank/static')]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login-success'
 LOGOUT_REDIRECT_URL = 'two_factor:login'

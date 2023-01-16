@@ -6,6 +6,7 @@ app_name = 'account_management_app'
 
 urlpatterns = [
     path('', views.index, name="index"),
+    path('login-success/', views.login_success, name="login_success"),
     path('transfer/<int:account_number>/', views.transfer, name="transfer"),
     path('transfer/external/<int:account_number>/',
          views.external_transfer,

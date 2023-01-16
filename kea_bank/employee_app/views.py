@@ -1,18 +1,13 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse
 
 from account_management_app.models import Customer, Account
 
 
-def employee_check(user):
-    return hasattr(user, "employee")
-
-
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def index(request):
     try:
         customers = Customer.objects.all()
@@ -26,7 +21,6 @@ def index(request):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def my_profile(request):
     try:
         return render(request, 'employee_app/index.html', {})
@@ -35,7 +29,6 @@ def my_profile(request):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def account_detail(request, account_number):
     try:
         account = Account.objects.get(account_number=account_number)
@@ -49,7 +42,6 @@ def account_detail(request, account_number):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def create_customer(request):
     if (request.method == 'POST'):
         try:
@@ -82,7 +74,6 @@ def create_customer(request):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def customer_detail(request, pk):
     try:
         customer = Customer.objects.get(pk=pk)
@@ -99,7 +90,6 @@ def customer_detail(request, pk):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def update_customer(request, pk):
     try:
         customer = Customer.objects.get(pk=pk)
@@ -118,7 +108,6 @@ def update_customer(request, pk):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def create_account(request, pk):
     if request.method == "POST":
         customer = Customer.objects.get(pk=pk)
@@ -132,7 +121,6 @@ def create_account(request, pk):
 
 
 @login_required(login_url='login_app:login')
-@user_passes_test(employee_check, login_url='login_app:login')
 def delete_account(request, account_number, pk):
     if request.method == "POST":
         account = Account.objects.get(account_number=account_number)
@@ -142,7 +130,6 @@ def delete_account(request, account_number, pk):
 
 
 @login_required(login_url='/accounts/login/')
-@user_passes_test(employee_check, login_url='login_app:login')
 def my_profile(request):
     try:
         user = request.user
