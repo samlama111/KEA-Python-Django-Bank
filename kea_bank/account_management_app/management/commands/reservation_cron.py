@@ -22,7 +22,6 @@ class Command(BaseCommand):
             print(f'Transaction with ID: {transaction.token} can not be reverted, trying again')
     
     def confirm(self, transaction):
-        # TODO: add further validation, e.g. checking status and commiting only of it's positive (confirmed, to_be_confirmed)
         transaction.status = 'confirmed'
         transaction.save()
         print(f'Transaction completed for transfer with ID: {transaction.token}')
@@ -60,11 +59,6 @@ class Command(BaseCommand):
                     url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
 
                     for i in range(3):
-                        transaction_status = requests.get(url)
-                        # Handling the unlikely event in which receiver confirms before sender
-                        if transaction_status.json()['status'] == 'confirmed':
-                            self.confirm(transaction)
-                            break
                         res = requests.put(url, data = {'status': 'to_be_confirmed' })
                         if res.ok:
                             transaction.successful_attempts += 1                        

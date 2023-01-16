@@ -26,12 +26,21 @@ class Command(BaseCommand):
             try:
                 receiver_account = Account.objects.get(account_number=transaction.receiver_account_number)
                 if receiver_account:
-                    # Create entry in local ledger
-                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number, is_loan=True)
-                    # Update status to confirmed
-                    transaction.status = 'confirmed'
-                    transaction.save()
-                    print(f'Transaction finished for transfer with ID: {transaction.token}')
+                    external_bank_url = transaction.reservation_bank_account.bank.api_url
+                    url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
+                    # TODO: repeat
+                    transaction_status = requests.get(url)
+                    if transaction_status.json()['status'] == 'confirmed':
+                        # TODO: change to successful attempts
+                        # Create entry in local ledger
+                        transaction.reservation_bank_account.make_payment(transaction.amount, transaction.receiver_account_number, is_loan=True)
+                        # Update status to confirmed
+                        transaction.status = 'confirmed'
+                        transaction.save()
+                        print(f'Transaction finished for transfer with ID: {transaction.token}')
+                    else: 
+                        # TODO: change to unsuccessful attempts
+                        self.abort(transaction)
                 else: 
                     self.abort(transaction)
             except Exception:
