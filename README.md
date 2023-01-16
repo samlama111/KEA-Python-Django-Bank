@@ -28,6 +28,8 @@ Final project of a banking system done in Django
         ```
         - Open the file <Python-folder>\Lib\site-packages\yaml\constructor.py, go to line 126:
             - change `collections.Hashable` to `collections.abc.Hashable` (`if not isinstance(key, collections.abc.Hashable):`)
+- download nltk data for the chatbot by running the nltk_download.py file and downloading all packages through the GUI presented.
+Run `python nltk_download.py` and use the GUI to download all packages.
 - set-up database & migrate using `python manage.py migrate`
 - (optional) create super user using `python manage.py createsuperuser`
 - populate the database using `python manage.py setup`
@@ -40,9 +42,6 @@ Final project of a banking system done in Django
 - Cron service running
   - implies Windows isn't supported, but can still execute transfers, but just manually, using `python manage.py {name_of_cron_task}`
 - Cron scripts registered as tasks using `python manage.py installtasks`
-- ATM transactions can be only iniated using the [API](http://localhost:8000/api/v1/transaction)
-  - Make sure to use:
-    - a UUID as `token`
-    - select a correct Reservation bank account
+- Transactions can be iniated from your particular account, to any external bank selected from a drop-down
 - For a successful transfer, both servers need to have a local Bank account of each other (pointing to the correct URL)
   - Target customer account must exist

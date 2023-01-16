@@ -7,6 +7,7 @@ app_name = 'account_management_app'
 urlpatterns = [
     path('', views.index, name="index"),
     path('transfer/<int:account_number>/', views.transfer, name="transfer"),
+    path('transfer/external/<int:account_number>/', views.external_transfer, name="external_transfer"),
     path('my-profile/', views.my_profile, name="my_profile"),
     path('chatbot/', views.chatbot_conv, name="chatbot_conv"),
     path('message/', views.chatbot_messages, name = "chatbot_messages" ),

@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 from django.db import models, transaction
 from django.contrib.auth.models import User
@@ -36,8 +37,8 @@ class Customer(models.Model):
         default=CustomerRank.BASIC
     )
 
-    def get_accounts(self):
-        return Account.objects.filter(user=self.user)
+    def get_ordinary_accounts(self):
+        return Account.objects.filter(user=self.user, is_saving_account=False)
     
     def get_external_banks(self):    
         return Bank.objects.filter(bank_type='external')
@@ -46,16 +47,8 @@ class Customer(models.Model):
         return Account.objects.get(account_type='operational')
     
     @property
-    def total_balance(self):
-        accounts = self.get_accounts()
-        total_balance = 0
-        for item in accounts:
-            total_balance += item.balance
-        return total_balance
-    
-    @property
     def total_balance_bank_accounts(self):
-        accounts = Account.objects.filter(user=self.user, is_saving_account = False)
+        accounts = self.get_ordinary_accounts()
         total_balance = 0
         for item in accounts:
             total_balance += item.balance
@@ -88,12 +81,17 @@ class Account(models.Model):
         default=AccountType.CUSTOMER
     )
 
+    def create(user, name=None, is_saving_account=False):
+        local_bank = Bank.objects.get(bank_type='local')
+        new_account = Account(user=user, bank=local_bank, is_saving_account=is_saving_account)
+        new_account.save()
+    
     def get_transactions(self):
-        my_transactions = Ledger.objects.filter(account=self)
+        my_transactions = Ledger.objects.filter(account=self).order_by('-created_timestamp')
         return my_transactions
 
     def get_loan_transactions(self):
-        loan_transactions = Ledger.objects.filter(account=self, is_loan=True)
+        loan_transactions = Ledger.objects.filter(account=self, is_loan=True).order_by('-created_timestamp')
         return loan_transactions
     
     def get_amount_owed(self):
@@ -104,7 +102,7 @@ class Account(models.Model):
         return my_loan_transactions_with_balance['balance']
     
     def get_saving_account_transactions(self):
-        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True)
+        saving_account_transactions = Ledger.objects.filter(account=self, is_saving_account = True).order_by('-created_timestamp')
         return saving_account_transactions
     
     @property
@@ -115,7 +113,6 @@ class Account(models.Model):
         saving_transaction_with_balance = saving_transaction.aggregate(balance=Sum("amount"))
         return saving_transaction_with_balance['balance']
 
-
     @property
     def balance(self):
         my_transactions = self.get_transactions()
@@ -124,20 +121,34 @@ class Account(models.Model):
         my_transactions_with_balance = my_transactions.aggregate(balance=Sum("amount"))
         return my_transactions_with_balance['balance']
     
+    def pay_back_loan(self, amount, amount_owed):
+        if amount_owed >= amount:
+                our_account = self.user.customer.get_bank_operational_account()
+                self.make_payment(amount, our_account.account_number, is_loan=True)
+        else:
+            raise ValidationError('Cant return more than what you owe')
 
-    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+    def validate_payment(self, amount, balance, user, is_loan=False):
+        if not isinstance(amount, Decimal):
+            raise ValidationError('Amount must be of type Decimal')
         if amount < 0:
             raise ValidationError('Please use a positive amount')
-
-        if is_loan==False and self.balance < int(amount):
+        if is_loan==False and balance < amount:
             raise ValidationError('Balance is too low')
+        if is_loan==True and hasattr(user, 'customer'):
+            customer_rank = user.customer.rank
+            if customer_rank == 'basic':
+                raise ValidationError('Cant apply for loan. Please upgrade your user rank.')
+    
+    def make_payment(self, amount, account_number, is_loan=False, is_saving_account=False):
+        self.validate_payment(amount, self.balance, self.user, is_loan=is_loan)
 
         target_account = Account.objects.get(account_number=account_number)
 
         with transaction.atomic():
             transaction_id = uuid.uuid4()
-            Ledger.objects.create(account=target_account, is_creditor=True, amount=int(amount), transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
-            Ledger.objects.create(account=self, is_creditor=False, amount=-int(amount), transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=target_account, is_creditor=True, amount=amount, transaction_id=transaction_id, is_loan=is_loan, note='', variable_symbol='', is_saving_account=is_saving_account)
+            Ledger.objects.create(account=self, is_creditor=False, amount=-amount, transaction_id=transaction_id, note='', is_loan=is_loan, variable_symbol='', is_saving_account=is_saving_account)
     
 
 class Ledger(models.Model):

@@ -27,10 +27,6 @@ class Command(BaseCommand):
             res = requests.post(external_bank_url+'/api/v1/transaction', data = external_bank_metadata)
             if (res.status_code == 201):
                 print(f'Reservation created for transfer with ID: {transaction.token}')
-                # Make local reservation to external bank 
-                sender_account = Account.objects.get(account_number=transaction.sender_account_number)
-                # TODO: catch validation errors
-                sender_account.make_payment(transaction.amount, transaction.reservation_bank_account.account_number)
 
                 url = external_bank_url+f'/api/v1/transaction/{transaction.token}/'
 
@@ -43,6 +39,8 @@ class Command(BaseCommand):
                     print(f'Transaction completed for transfer with ID: {transaction.token}')
                 else:
                     print(f'Transaction with ID: {transaction.token} failed', res.text)
+                    transaction.reservation_bank_account.make_payment(transaction.amount, transaction.sender_account_number, is_loan=True)
+                    
                     transaction.status = 'to_be_deleted'
                     transaction.save()
                     
