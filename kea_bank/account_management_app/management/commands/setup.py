@@ -64,11 +64,10 @@ class Command(BaseCommand):
         external_bank_user.is_active = False
         external_bank_user.save()
 
-        local_external_account = Account.objects.create(
-            user=external_bank_user,
-            bank=external_bank,
-            name='External Bank Operational Account',
-            account_type='loan')
+        Account.objects.create(user=external_bank_user,
+                               bank=external_bank,
+                               name='External Bank Operational Account',
+                               account_type='loan')
 
         default_user_employee = User.objects.create_user(
             'employee', email='employee@gmail.com', password='test123')
