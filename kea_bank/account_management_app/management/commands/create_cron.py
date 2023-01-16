@@ -44,7 +44,8 @@ class Command(BaseCommand):
                     for i in range(3):
                         transaction_status = requests.get(url)
                         if transaction_status.json()['status'] == 'confirmed':
-                            self.confirm(transaction)                      
+                            self.confirm(transaction)  
+                            break                    
                         else:
                             transaction.failed_attempts += 1
                         transaction.save()
