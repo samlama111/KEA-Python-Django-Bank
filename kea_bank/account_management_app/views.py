@@ -172,9 +172,21 @@ def saving_account_detail(request, account_number):
 def delete_saving_account(request, account_number):
     if request.method == "POST":
         account = Account.objects.get(account_number=account_number)
-        account.delete()
-        return HttpResponseRedirect(
-            reverse('account_management_app:my_savings'))
+        if account.balance == 0:
+            account.delete()
+            return HttpResponseRedirect(
+                reverse('account_management_app:my_savings'))
+        else:
+            user = request.user
+            total_balance = user.customer.total_balance_saving_accounts
+            accounts = Account.objects.filter(user=user, is_saving_account=True)
+
+            return render(request, 'account_management_app/my_savings.html',
+                          { 'user': user,
+                            'total_balance': total_balance,
+                            'accounts': accounts,
+                            'error': 'You cannot delete an account with a balance'
+                            })
 
 
 @login_required(login_url='/accounts/login/')
